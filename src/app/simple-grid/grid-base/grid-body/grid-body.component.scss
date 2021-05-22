@@ -1,0 +1,57 @@
+@import '../../../../assets/standard-styles/colors.scss';
+
+.box-grid {
+  height: 100%;
+  width: 100%;
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: 'liga';
+
+  -ms-interpolation-mode: nearest-neighbor;
+
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  user-zoom: false;
+  background-color: $gridBackgroundColor;
+}
+
+.div-tooltip {
+  opacity: 0;
+  position: fixed;
+  top: -9000px;
+  left: -9000px;
+  border-radius: 4px;
+  background-color:$tooltipBackgroundColor;
+  padding: 5px 10px;
+  margin: 20px;
+  border: $tooltipBorder;
+  z-index: 99999;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, .5);
+  font-size: 12px;
+}
+
+.mat-menu {
+  visibility: hidden;
+  position: fixed;
+
+}
+
+::ng-deep .mat-menu-content {
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+}
+
+.mat-menu-item {
+  line-height: 35px;
+  height: 35px;
+
+}

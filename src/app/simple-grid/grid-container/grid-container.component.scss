@@ -1,0 +1,40 @@
+$header_height: 65px;
+$scrollbar-horizontal: 20px;
+$scrollbar-vertical: 20px;
+
+.grid-container {
+  height: 100vh;
+  width: 100vw;
+  padding: 0;
+  margin: 0;
+}
+
+.grid-box {
+  display: flex;
+  flex-direction: row;
+  height: calc(100vh - (#{$header_height} + #{$scrollbar-horizontal}));
+  width: 100vw;
+  background-color: pink;
+}
+
+.header {
+  background-color: deepskyblue;
+  height: $header_height;
+}
+
+.grid-body {
+  background-color: yellow;
+  width: calc(100vw - #{$scrollbar-vertical} );
+  height:100%;
+}
+
+.v-scrollbar{
+  width: $scrollbar-vertical;
+  height:100%;
+  background-color: grey;
+}
+.h-scrollbar {
+  width: calc(100vw - #{$scrollbar-vertical} );
+  height:$scrollbar-vertical;
+  background-color: grey;
+}

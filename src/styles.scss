@@ -1,1 +1,29 @@
 /* You can add global styles to this file, and also import other style files */
+.container {
+
+  max-width: 100%;
+  width: 100%;
+  min-width: 100%;
+  display: flex;
+  flex-flow: row wrap;
+  background-color: yellowgreen;
+  padding: 0;
+  margin: 0;
+}
+
+
+.container1 {
+
+  max-width: 100%;
+  width: 100%;
+  min-width: 100%;
+
+  max-height: 100vh;
+  height: 100vh;
+  min-height: 100vh;
+  display: flex;
+  flex-flow: row wrap;
+  background-color:red;
+  padding: 0;
+  margin: 0;
+}
