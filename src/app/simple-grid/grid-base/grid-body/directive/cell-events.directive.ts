@@ -7,7 +7,7 @@ import {
   } from '@angular/core';
 
 
-import { KlacksPosition } from '../../gridClasses/position';
+import { Position } from '../../gridClasses/position';
 import { GridBodyComponent } from '../grid-body.component';
 import { ScrollGridService } from '../../services/scroll-grid.service';
 import { GridSettingsService } from '../../services/grid-settings.service';
@@ -29,7 +29,6 @@ export class CellEventsDirective {
     private zone: NgZone,
     private gridBody: GridBodyComponent,
     public viewContainerRef: ViewContainerRef,
-    @Inject(GridDataService) private gridData: GridDataService,
     @Inject(ScrollGridService) private scrollGrid: ScrollGridService,
     @Inject(GridSettingsService) private gridSetting: GridSettingsService,
     @Inject(GridCellManipulationService)
@@ -63,7 +62,7 @@ export class CellEventsDirective {
     this.isDrawing = false;
 
     if (this.hasCollection) {
-      const pos: KlacksPosition = this.gridBody.calcCorrectCoordinate(event);
+      const pos: Position = this.gridBody.calcCorrectCoordinate(event);
       if (!this.gridBody.isPositionValid(pos)) {
         return;
       }
@@ -76,7 +75,7 @@ export class CellEventsDirective {
 
   @HostListener('mousemove', ['$event']) onMouseMove(event: MouseEvent): void {
     if (event.buttons === 1 && this.isDrawing) {
-      const pos: KlacksPosition = this.gridBody.calcCorrectCoordinate(event);
+      const pos: Position = this.gridBody.calcCorrectCoordinate(event);
 
       this.scrollOnPoint(pos);
       if (!this.gridBody.isPositionValid(pos)) {
@@ -120,7 +119,7 @@ export class CellEventsDirective {
       }
 
       if (this.gridBody.position.row < this.gridData.rows) {
-        this.gridBody.position = new KlacksPosition(
+        this.gridBody.position = new Position(
           this.gridBody.position.row + 1,
           this.gridBody.position.column
         );
@@ -163,7 +162,7 @@ export class CellEventsDirective {
         this.scrollGrid.vScrollValue = this.scrollGrid.maxRows;
       }
 
-      this.gridBody.position = new KlacksPosition(
+      this.gridBody.position = new Position(
         nextVisibleRow,
         this.gridBody.position.column
       );
@@ -186,7 +185,7 @@ export class CellEventsDirective {
 
         const tmpRow: number = this.gridBody.position.row - 1;
 
-        this.gridBody.position = new KlacksPosition(
+        this.gridBody.position = new Position(
           tmpRow,
           this.gridBody.position.column
         );
@@ -225,7 +224,7 @@ export class CellEventsDirective {
         this.scrollGrid.vScrollValue = previousVisibleRow;
       }
 
-      this.gridBody.position = new KlacksPosition(
+      this.gridBody.position = new Position(
         previousVisibleRow,
         this.gridBody.position.column
       );
@@ -251,7 +250,7 @@ export class CellEventsDirective {
         this.scrollGrid.vScrollValue = this.scrollGrid.maxRows;
       }
 
-      this.gridBody.position = new KlacksPosition(
+      this.gridBody.position = new Position(
         this.gridData.rows - 1,
         this.gridBody.position.column
       );
@@ -272,7 +271,7 @@ export class CellEventsDirective {
 
       this.scrollGrid.vScrollValue = 0;
 
-      this.gridBody.position = new KlacksPosition(
+      this.gridBody.position = new Position(
         0,
         this.gridBody.position.column
       );
@@ -292,7 +291,7 @@ export class CellEventsDirective {
 
       if (this.gridBody.position.column > 0) {
         const previousColumn: number = this.gridBody.position.column - 1;
-        this.gridBody.position = new KlacksPosition(
+        this.gridBody.position = new Position(
           this.gridBody.position.row,
           previousColumn
         );
@@ -317,7 +316,7 @@ export class CellEventsDirective {
       if (this.gridBody.position.column < this.gridData.columns - 1) {
         const nextColumn: number = this.gridBody.position.column + 1;
 
-        this.gridBody.position = new KlacksPosition(
+        this.gridBody.position = new Position(
           this.gridBody.position.row,
           nextColumn
         );
@@ -420,7 +419,7 @@ export class CellEventsDirective {
     }
   }
 
-  scrollOnPoint(pos: KlacksPosition) {
+  scrollOnPoint(pos: Position) {
     if (pos.column < this.scrollGrid.hScrollValue) {
       this.gridBody.moveGrid(-1, 0);
       return;
@@ -451,7 +450,7 @@ export class CellEventsDirective {
   private respondToLeftMouseDown(event: MouseEvent): void {
     this.gridBody.destroySelection();
 
-    const pos: KlacksPosition = this.gridBody.calcCorrectCoordinate(event);
+    const pos: Position = this.gridBody.calcCorrectCoordinate(event);
     this.isDrawing = true;
 
     if (this.gridBody.position !== pos) {

@@ -1,10 +1,21 @@
 
 <div class="grid-container">
-    <div class="header">Kopfzeile</div>
+    <!-- <div class="header">
+        <div class ="header-box ">
+            Kopfzeile
+        </div>
+        
+    </div> -->
     <div class="grid-box">
-        <div class="grid-body">Inhalt</div>
-        <div  class="v-scrollbar"></div>
+        <div class="grid-body" >
+            <app-grid-body #gridBody [vScrollbar]="vScrollbar" [hScrollbar]="hScrollbar"></app-grid-body>
+        </div>
+        <div  class="v-scrollbar">
+            <app-v-scrollbar  #vScrollbar [gridBody]="gridBody" ></app-v-scrollbar>
+        </div>
 
     </div>
-    <div class="h-scrollbar"></div>
+    <div class="h-scrollbar">
+        <app-h-scrollbar  #hScrollbar [gridBody]="gridBody"></app-h-scrollbar>
+    </div>
 </div>

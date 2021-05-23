@@ -1,4 +1,4 @@
-$header_height: 65px;
+// $header_height: 65px;
 $scrollbar-horizontal: 20px;
 $scrollbar-vertical: 20px;
 
@@ -12,15 +12,21 @@ $scrollbar-vertical: 20px;
 .grid-box {
   display: flex;
   flex-direction: row;
-  height: calc(100vh - (#{$header_height} + #{$scrollbar-horizontal}));
+  height: calc(100vh -  #{$scrollbar-horizontal});
   width: 100vw;
   background-color: pink;
 }
 
-.header {
-  background-color: deepskyblue;
-  height: $header_height;
-}
+// .header {
+//   background-color: deepskyblue;
+//   height: $header_height;
+// }
+
+// .header-box {
+//   background-color: grey;
+//   width: calc(100vw - #{$scrollbar-vertical} );
+//   height: $header_height;
+// }
 
 .grid-body {
   background-color: yellow;

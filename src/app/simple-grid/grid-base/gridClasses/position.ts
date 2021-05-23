@@ -1,4 +1,4 @@
-export class KlacksPosition {
+export class Position {
 
 
   private col: number;
@@ -24,15 +24,15 @@ export class KlacksPosition {
     return false;
   }
 
-  isEqual(pos: KlacksPosition): boolean {
+  isEqual(pos: Position): boolean {
 
     if (this.column === pos.column && this.row === pos.row) { return true; }
     return false;
   }
 }
 
-export class KlacksPositionCollection {
-  private items: Array<KlacksPosition>;
+export class PositionCollection {
+  private items: Array<Position>;
 
   constructor() {
     this.items = [];
@@ -42,11 +42,11 @@ export class KlacksPositionCollection {
     return this.items.length;
   }
 
-  add(value: KlacksPosition): void {
+  add(value: Position): void {
     this.items.push(value);
   }
 
-  item(index: number): KlacksPosition {
+  item(index: number): Position {
     return this.items[index];
   }
   clear(): void {
@@ -68,7 +68,7 @@ export class KlacksPositionCollection {
     return this.items.reduce((max, p) => p.row > max ? p.row : max, this.items[0].row);
   }
 
-  contains(value: KlacksPosition): boolean {
+  contains(value: Position): boolean {
     return this.items.find(x => (x.column === value.column && x.row === value.row)) !== undefined;
   }
 }
