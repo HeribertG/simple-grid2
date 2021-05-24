@@ -232,17 +232,11 @@ export abstract class MDraw {
     ctx.transform(ratio, 0, 0, ratio, 0, 0);
   }
 
-  public static pixelRatio(ctx: CanvasRenderingContext2D ): number {
+  
+  public static pixelRatio(ctx: CanvasRenderingContext2D): number {
+  
+    return window.devicePixelRatio || 1 
 
-    const dpr = window.devicePixelRatio || 1;
-
-    const bsr = 1 //ctx.webkitBackingStorePixelRatio ||
-      // ctx.mozBackingStorePixelRatio ||
-      // ctx.msBackingStorePixelRatio ||
-      // ctx.oBackingStorePixelRatio ||
-      // ctx.backingStorePixelRatio || 1;
-
-    return dpr / bsr;
   }
 
   public static createSVG(
@@ -287,12 +281,9 @@ export abstract class MDraw {
     return correctSizeCanvas;
   }
 
-  public static setAntiAliasing(context : CanvasRenderingContext2D) {
-    // context.imageSmoothingEnabled = false;       /* standard */
-    // context.mozImageSmoothingEnabled = false;    /* Firefox */
-    // context.oImageSmoothingEnabled = false;      /* Opera */
-    // context.webkitImageSmoothingEnabled = false; /* Safari */
-    // context.msImageSmoothingEnabled = false;     /* IE */
+  public static setAntiAliasing(context: CanvasRenderingContext2D) {
+    context!.imageSmoothingEnabled = false;       /* standard */
+
   }
 }
 

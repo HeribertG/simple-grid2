@@ -24,7 +24,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   public gridSetting: GridSetting| undefined | null = new GridSetting();
   private cellManipulation: GridCellManipulation| undefined | null = new GridCellManipulation(this.gridSetting!);
   private gridCellContextMenu: GridCellContextMenu| undefined | null = new GridCellContextMenu(this.gridData!);
-  private createCell : CreateCell| undefined | null = new CreateCell(this.gridSetting!);
+  private createCell : CreateCell| undefined | null = new CreateCell(this.gridSetting!, this.gridData!);
   private createHeader : CreateHeader| undefined | null = new CreateHeader(this.gridSetting!);
 
 
