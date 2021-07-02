@@ -1,4 +1,5 @@
 import { AfterViewInit, Component,Input, NgZone, OnDestroy, OnInit} from '@angular/core';
+import { MDraw } from '../../helpers/draw-helper';
 import { MenuIDEnum } from '../../helpers/enums/cell-settings.enum';
 import { ContextMenu } from '../gridClasses/context-menu';
 import { CreateCell } from '../gridClasses/create-cell';
@@ -63,17 +64,23 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     this.headerCanvas! = document.createElement('canvas') as HTMLCanvasElement;
 
     this.ctx! = this.canvas!.getContext('2d') as CanvasRenderingContext2D;
+    MDraw.createHiDPICanvas(this.ctx!);
+    MDraw.setAntiAliasing(this.ctx!);
     this.ctx!.imageSmoothingQuality = 'high';
 
 
     this.renderCanvasCtx = this.renderCanvas!.getContext(
       '2d'
     ) as CanvasRenderingContext2D;
+    MDraw.createHiDPICanvas(this.renderCanvasCtx!);
+    MDraw.setAntiAliasing(this.renderCanvasCtx!);
     this.renderCanvasCtx.imageSmoothingQuality = 'high';
 
     this.headerCtx = this.headerCanvas!.getContext(
       '2d'
     ) as CanvasRenderingContext2D;
+    MDraw.createHiDPICanvas(this.headerCtx!);
+    MDraw.setAntiAliasing(this.headerCtx!);
     this.headerCtx.imageSmoothingQuality = 'high';
 
     this.tooltip = document.getElementById('tooltip') as HTMLDivElement;
@@ -117,8 +124,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   changeZoom(value: number) {
 
     this.gridSetting!.zoom = Math.round(value * 10) / 10;
-    this.createCell!.reset();
-    this.createHeader!.reset();
+  
     this.setMetrics();
     this.vScrollbar!.init();
     this.vScrollbar!.init();
@@ -615,17 +621,22 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     const tmpCol: number = col + this.scrollGrid.hScrollValue;
     const cellWidth = this.gridSetting!.cellWidth;
     const cellHeight = this.gridSetting!.cellHeight;
+    const cellWidthWithHtmlZoom = this.gridSetting!.cellWidthWithHtmlZoom;
+    const cellHeightWithHtmlZoom = this.gridSetting!.cellHeightWithHtmlZoom;
 
     if (tmpRow < this.gridData!.rows && tmpCol < this.gridData!.columns) {
       const img = this.createCell!.createCell(tmpRow, tmpCol);
       if (img) {
         this.renderCanvasCtx!.drawImage(
           img,
+          0,
+          0,
+          cellWidthWithHtmlZoom,
+          cellHeightWithHtmlZoom,
           col * cellWidth,
           row * cellHeight,
           cellWidth,
           cellHeight
-
 
         );
       }

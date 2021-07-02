@@ -228,15 +228,17 @@ export abstract class MDraw {
   }
 
   public static createHiDPICanvas(ctx: CanvasRenderingContext2D) {
-    const ratio = this.pixelRatio(ctx);
+    const ratio = this.pixelRatio();
+
     ctx.transform(ratio, 0, 0, ratio, 0, 0);
+    ctx.canvas.setAttribute('width', (ctx.canvas.width * ratio).toString());
+    ctx.canvas.setAttribute('height', (ctx.canvas.height * ratio).toString());
   }
 
-  
-  public static pixelRatio(ctx: CanvasRenderingContext2D): number {
-  
-    return window.devicePixelRatio || 1 
 
+  public static pixelRatio(): number {
+    const tmp = window.devicePixelRatio || 1
+    return tmp > 1 ? tmp : 1;
   }
 
   public static createSVG(

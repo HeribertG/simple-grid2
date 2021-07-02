@@ -21,17 +21,6 @@ export class CreateCell {
     }
 
 
-    reset() {
-        this.init();
-    }
-    private init() {
-
-        const width = this.gridSetting!.cellWidth + this.gridSetting!.increaseBorder;
-        const height =
-            this.gridSetting!.cellHeight + this.gridSetting!.increaseBorder;
-
-    }
-
     private createEmptyCanvas(
         backGroundColor: string,
         width: number,
@@ -40,10 +29,11 @@ export class CreateCell {
     ): HTMLCanvasElement {
         const tempCanvas: HTMLCanvasElement = document.createElement('canvas');
         const ctx: CanvasRenderingContext2D | null = tempCanvas.getContext('2d');
-        MDraw.setAntiAliasing(ctx!);
-        MDraw.createHiDPICanvas(ctx!);
         tempCanvas.width = width;
         tempCanvas.height = height;
+        this.gridSetting!.lastPixelRatio = MDraw.pixelRatio();
+        MDraw.setAntiAliasing(ctx!);
+        MDraw.createHiDPICanvas(ctx!);
 
         this.fillEmptyCell(
             ctx!,
@@ -82,8 +72,8 @@ export class CreateCell {
     createCell(row: number, col: number): HTMLCanvasElement {
         const tempCanvas: HTMLCanvasElement = this.createEmptyCanvas(
             this.gridSetting!.backGroundColor,
-            this.gridSetting!.cellWidth + this.gridSetting!.increaseBorder,
-            this.gridSetting!.cellHeight + this.gridSetting!.increaseBorder,
+            this.gridSetting!.cellWidthWithHtmlZoom + this.gridSetting!.increaseBorder,
+            this.gridSetting!.cellHeightWithHtmlZoom + this.gridSetting!.increaseBorder,
             false);
 
         const ctx = tempCanvas.getContext('2d');
@@ -130,10 +120,10 @@ export class CreateCell {
             text,
             0,
             0,
-            this.gridSetting!.cellWidth,
-            this.gridSetting!.mainTextHeight,
-            this.gridSetting!.font,
-            12,
+            this.gridSetting!.cellWidthWithHtmlZoom,
+            this.gridSetting!.mainTextHeightWithHtmlZoom,
+            this.gridSetting!.subFontWithHtmlZoom,
+            this.gridSetting!.subFontsizeithHtmlZoom,
             this.gridSetting!.mainFontColor,
             TextAlignmentEnum.Center,
             BaselineAlignmentEnum.Center

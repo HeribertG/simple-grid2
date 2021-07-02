@@ -1,3 +1,4 @@
+import { MDraw } from "../../helpers/draw-helper";
 import { ClipboardModeEnum } from "../../helpers/enums/grid-settings.enum";
 
 export class GridSetting {
@@ -14,6 +15,18 @@ export class GridSetting {
   cellHeaderHeight = 30 * this.zoom;
   font = 'normal ' + 12 * this.zoom + 'px Arial';
   subFont = 'normal ' + 10 * this.zoom + 'px Arial';
+
+  cellHeightWithHtmlZoom = 50 * this.zoom;
+  cellWidthWithHtmlZoom = 90 * this.zoom;
+  mainTextHeightWithHtmlZoom = 23 * this.zoom;
+  firstSubTextHeightWithHtmlZoom = 12 * this.zoom;
+  secondSubTextHeightWithHtmlZoom = 12 * this.zoom;
+  cellHeaderHeightWithHtmlZoom = 30 * this.zoom;
+  fontWithHtmlZoom = 'normal ' + 12 * this.zoom + 'px Arial';
+  subFontWithHtmlZoom = 'normal ' + 10 * this.zoom + 'px Arial';
+  subFontsizeithHtmlZoom = Math.round((12  * this.htmlZoom) * 10) / 10;
+
+
   rowHeaderIconWith = 20;
   rowHeaderIconHeight = 20;
 
@@ -53,6 +66,11 @@ export class GridSetting {
     this.reset();
   }
 
+  get htmlZoom(): number {
+    return this._zoom * MDraw.pixelRatio();
+  }
+  
+
   reset() {
     this.increaseBorder = (0.5);
     this.cellHeight = Math.round(50 * this.zoom);
@@ -65,14 +83,30 @@ export class GridSetting {
     this.font = 'normal ' + fontsize + 'px Arial';
     const subFontsize = Math.round((10 * this.zoom) * 10) / 10;
     this.subFont = 'normal ' + subFontsize + 'px Arial';
+
+    this.cellHeightWithHtmlZoom = 50 * this.htmlZoom;
+    this.cellWidthWithHtmlZoom = 90 * this.htmlZoom;
+    this.mainTextHeightWithHtmlZoom = 23 * this.htmlZoom;
+    this.firstSubTextHeightWithHtmlZoom = 12 * this.htmlZoom;
+    this.secondSubTextHeightWithHtmlZoom = 12 * this.htmlZoom;
+    this.cellHeaderHeightWithHtmlZoom = 30 * this.htmlZoom;
+    this.fontWithHtmlZoom = 'normal ' + 12 * this.htmlZoom + 'px Arial';
+    this.subFontWithHtmlZoom = 'normal ' + 10 * this.htmlZoom + 'px Arial'
+    this.subFontsizeithHtmlZoom = Math.round((12  * this.htmlZoom) * 10) / 10;
+
   }
 
 
-  get lastPixelRatio(): number {
+  public get lastPixelRatio(): number {
     return this._lastPixelRatio ;
   }
-  set lastPixelRatio(value: number) {
-    this._lastPixelRatio = value;
+  public set lastPixelRatio(value: number) {
+    
+    if(this._lastPixelRatio !== value){
+      this._lastPixelRatio = value;
+      this.reset();
+    }
+   
 
   }
 
