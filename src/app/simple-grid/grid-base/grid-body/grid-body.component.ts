@@ -1,4 +1,4 @@
-import { AfterViewInit, Component,Input, NgZone, OnDestroy, OnInit} from '@angular/core';
+import { AfterViewInit, Component,Input, NgZone, OnDestroy, OnInit, Renderer2} from '@angular/core';
 import { MDraw } from '../../helpers/draw-helper';
 import { MenuIDEnum } from '../../helpers/enums/cell-settings.enum';
 import { ContextMenu } from '../gridClasses/context-menu';
@@ -27,7 +27,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   private gridCellContextMenu: GridCellContextMenu| undefined | null = new GridCellContextMenu(this.gridData!);
   private createCell : CreateCell| undefined | null = new CreateCell(this.gridSetting!, this.gridData!);
   private createHeader : CreateHeader| undefined | null = new CreateHeader(this.gridSetting!);
-
+  resizeWindow:(() => void) | undefined;
 
   
 
@@ -53,6 +53,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private zone: NgZone,
     private scrollGrid: ScrollGridService,
+    private renderer: Renderer2,
   ) { }
 
   ngOnInit() {
@@ -89,6 +90,9 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     this.init();
+    this.resizeWindow = this.renderer.listen('window', 'resize', (event) => {
+      this.resize(event);
+    });
   }
 
   ngOnDestroy(): void {
@@ -121,6 +125,11 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     this.drawGrid();
   }
 
+  private resize = (event:any): void => {
+    this.setMetrics();
+    this.refreshGrid();
+  }
+
   changeZoom(value: number) {
 
     this.gridSetting!.zoom = Math.round(value * 10) / 10;
@@ -146,12 +155,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     this.drawGrid();
   }
 
-  onResize(): void {
-    this.setMetrics();
-    this.refreshGrid();
-  }
-
-
+  
   refreshGrid(): void {
     this.canvas!.height = this.canvas!.clientHeight;
     this.canvas!.width = this.canvas!.clientWidth;
