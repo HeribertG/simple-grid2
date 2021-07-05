@@ -1,4 +1,4 @@
-import { AfterViewInit, Component,Input, NgZone, OnDestroy, OnInit, Renderer2} from '@angular/core';
+import { AfterViewInit, Component, Input, NgZone, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { MDraw } from '../../helpers/draw-helper';
 import { MenuIDEnum } from '../../helpers/enums/cell-settings.enum';
 import { ContextMenu } from '../gridClasses/context-menu';
@@ -21,33 +21,34 @@ import { VScrollbarComponent } from '../v-scrollbar/v-scrollbar.component';
 })
 export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  public gridData: GridData| undefined | null = new GridData();
-  public gridSetting: GridSetting| undefined | null = new GridSetting();
-  private cellManipulation: GridCellManipulation| undefined | null = new GridCellManipulation(this.gridSetting!);
-  private gridCellContextMenu: GridCellContextMenu| undefined | null = new GridCellContextMenu(this.gridData!);
-  private createCell : CreateCell| undefined | null = new CreateCell(this.gridSetting!, this.gridData!);
-  private createHeader : CreateHeader| undefined | null = new CreateHeader(this.gridSetting!);
-  resizeWindow:(() => void) | undefined;
+  public gridData: GridData | undefined | null = new GridData();
+  public gridSetting: GridSetting | undefined | null = new GridSetting();
+  private cellManipulation: GridCellManipulation | undefined | null = new GridCellManipulation(this.gridSetting!);
+  private gridCellContextMenu: GridCellContextMenu | undefined | null = new GridCellContextMenu(this.gridData!);
+  private createCell: CreateCell | undefined | null = new CreateCell(this.gridSetting!, this.gridData!);
+  private createHeader: CreateHeader | undefined | null = new CreateHeader(this.gridSetting!);
+  resizeWindow: (() => void) | undefined;
+  visibilitychangeWindow: (() => void) | undefined;
 
-  
+
 
   public isFocused = true;
   public isBusy = false;
-  public subMenus: ContextMenu[]| undefined | null;
-  private ctx: CanvasRenderingContext2D| undefined | null;
-  private renderCanvasCtx: CanvasRenderingContext2D| undefined | null;
-  private canvas: HTMLCanvasElement| undefined | null;
-  private renderCanvas: HTMLCanvasElement| undefined | null;
-  private headerCtx: CanvasRenderingContext2D| undefined | null;
-  private headerCanvas: HTMLCanvasElement| undefined | null;
-  private tooltip: HTMLDivElement| undefined | null;
+  public subMenus: ContextMenu[] | undefined | null;
+  private ctx: CanvasRenderingContext2D | undefined | null;
+  private renderCanvasCtx: CanvasRenderingContext2D | undefined | null;
+  private canvas: HTMLCanvasElement | undefined | null;
+  private renderCanvas: HTMLCanvasElement | undefined | null;
+  private headerCtx: CanvasRenderingContext2D | undefined | null;
+  private headerCanvas: HTMLCanvasElement | undefined | null;
+  private tooltip: HTMLDivElement | undefined | null;
 
 
   contextMenuPosition = { x: '0px', y: '0px' };
 
-  
-  @Input() vScrollbar: VScrollbarComponent| undefined | null;
-  @Input() hScrollbar: HScrollbarComponent| undefined | null;
+
+  @Input() vScrollbar: VScrollbarComponent | undefined | null;
+  @Input() hScrollbar: HScrollbarComponent | undefined | null;
 
 
   constructor(
@@ -57,6 +58,15 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+
+    this.resizeWindow = this.renderer.listen('window', 'resize', (event) => {
+      this.resize(event);
+    });
+
+    this.visibilitychangeWindow = this.renderer.listen('window', 'visibilitychange', (event) => {
+      this.visibilityChange(event);
+    });
+
     this.canvas! = document.getElementById('gridCanvas') as HTMLCanvasElement;
 
 
@@ -90,12 +100,14 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     this.init();
-    this.resizeWindow = this.renderer.listen('window', 'resize', (event) => {
-      this.resize(event);
-    });
+
   }
 
   ngOnDestroy(): void {
+
+    if (this.resizeWindow) { this.resizeWindow(); }
+    if (this.visibilitychangeWindow) { this.visibilitychangeWindow(); }
+
     this.gridCellContextMenu!.destroy();
     this.gridCellContextMenu = null;
     this.cellManipulation!.destroy();
@@ -103,7 +115,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     this.createCell!.destroy();
     this.createCell = null;
 
-    
+
     this.gridData = null;
     this.ctx = null;
     this.canvas = null;
@@ -125,15 +137,18 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     this.drawGrid();
   }
 
-  private resize = (event:any): void => {
+  private resize = (event: any): void => {
     this.setMetrics();
     this.refreshGrid();
   }
 
+  private visibilityChange = (event: any): void => {
+
+  }
   changeZoom(value: number) {
 
     this.gridSetting!.zoom = Math.round(value * 10) / 10;
-  
+
     this.setMetrics();
     this.vScrollbar!.init();
     this.vScrollbar!.init();
@@ -155,7 +170,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     this.drawGrid();
   }
 
-  
+
   refreshGrid(): void {
     this.canvas!.height = this.canvas!.clientHeight;
     this.canvas!.width = this.canvas!.clientWidth;
@@ -281,7 +296,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
           col = 0;
         }
 
-        const tmpImage: ImageData|null|undefined = this.renderCanvasCtx!.getImageData(
+        const tmpImage: ImageData | null | undefined = this.renderCanvasCtx!.getImageData(
           col,
           row,
           this.gridSetting!.cellWidth + 8,
@@ -292,7 +307,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
           col,
           row + this.gridSetting!.cellHeaderHeight
         );
-       
+
       }
     }
   }
@@ -435,7 +450,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
         return;
       }
 
-   
+
 
       const tempCanvas: HTMLCanvasElement = document.createElement(
         'canvas'
@@ -504,7 +519,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   drawGrid() {
-    
+
     this.vScrollbar!.refresh();
     this.vScrollbar!.refresh();
 
@@ -677,13 +692,13 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const oldPosition: Position |null|undefined= this.cellManipulation!.position;
+    const oldPosition: Position | null | undefined = this.cellManipulation!.position;
     this.cellManipulation!.position = pos;
 
     this.refreshCell(oldPosition!);
     this.refreshHeaderCell(oldPosition!);
 
-  
+
 
     this.drawSelectedHeaderCell();
     this.drawSelectedCell();
@@ -885,7 +900,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     this.tooltip!.style.display = 'block';
     const that = this;
 
-    let timer = setInterval(function() {
+    let timer = setInterval(function () {
       if (op >= 0.9) {
         clearInterval(timer);
         // this.tooltip!.style.opacity = 1;
@@ -894,15 +909,15 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
         //   that.fadeOutToolTipSlow();
         // }, 1000);
       }
-     //  this.tooltip!.style.opacity = op;
+      //  this.tooltip!.style.opacity = op;
       op += op * 0.1;
     }, 20);
   }
 
   private fadeOutToolTipSlow() {
     let op = 1;
- 
-    const timer = setInterval(function() {
+
+    const timer = setInterval(function () {
       if (op <= 0.1) {
         clearInterval(timer);
         // that.tooltip!.style.opacity = 0;
