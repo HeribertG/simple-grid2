@@ -1,5 +1,5 @@
 import { MDraw } from "../../helpers/draw-helper";
-import { BaselineAlignmentEnum, CellTypeEnum, TextAlignmentEnum } from "../../helpers/enums/cell-settings.enum";
+import { BaselineAlignmentEnum, TextAlignmentEnum } from "../../helpers/enums/cell-settings.enum";
 import { Gradient3DBorderStyleEnum } from "../../helpers/enums/draw.enum";
 import { GridData } from "./data-grid";
 import { GridSetting } from "./grid-setting";
@@ -27,13 +27,17 @@ export class CreateCell {
         height: number,
         isLast: boolean = false
     ): HTMLCanvasElement {
+        this.gridSetting!.lastPixelRatio = MDraw.pixelRatio();
         const tempCanvas: HTMLCanvasElement = document.createElement('canvas');
         const ctx: CanvasRenderingContext2D | null = tempCanvas.getContext('2d');
-        tempCanvas.width = width;
-        tempCanvas.height = height;
-        this.gridSetting!.lastPixelRatio = MDraw.pixelRatio();
+        ctx!.imageSmoothingQuality = 'high';
         MDraw.setAntiAliasing(ctx!);
         MDraw.createHiDPICanvas(ctx!);
+
+        tempCanvas.width = width;
+        tempCanvas.height = height;
+        
+       
 
         this.fillEmptyCell(
             ctx!,
