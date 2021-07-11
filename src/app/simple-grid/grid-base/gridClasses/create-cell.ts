@@ -36,8 +36,8 @@ export class CreateCell {
 
         tempCanvas.width = width;
         tempCanvas.height = height;
-        
-       
+
+
 
         this.fillEmptyCell(
             ctx!,
@@ -85,10 +85,22 @@ export class CreateCell {
         const gridCell = this.gridData!.getItem(row, col);
 
 
-        const text = row.toString() + ' / ' + col.toString();
-        this.drawMainText(ctx!, text)
-        MDraw.drawBorder(ctx!, 0, 0, tempCanvas.width, tempCanvas.height, '#FF5733', 3, Gradient3DBorderStyleEnum.Sunken)
+        if (!gridCell.isEmpty()) {
+            this.drawMainText(ctx!, gridCell.mainText);
+            if (gridCell.hasSubText()) {
+                if (gridCell.firstSubText) {
+                    this.drawFirstSubText(ctx!, gridCell.firstSubText);
+                }
+                if (gridCell.secondSubText) {
+                    this.drawSecondSubText(ctx!, gridCell.secondSubText);
+                }
+            }
 
+        }
+
+       //  MDraw.drawBorder(ctx!, 0, 0,  this.gridSetting!.cellWidthWithHtmlZoom, tempCanvas.height, '#FF5733', 3, Gradient3DBorderStyleEnum.Sunken)
+
+        // this.drawBorder(ctx!);
         this.drawSimpleBorder(ctx!);
 
         return tempCanvas;
@@ -98,21 +110,21 @@ export class CreateCell {
     private drawBorder(ctx: CanvasRenderingContext2D): void {
         ctx.beginPath();
         ctx.strokeStyle = 'black';
-        ctx.lineWidth = 1;
+        ctx.lineWidth = this.gridSetting!.increaseBorderHtmlZoom;
 
         // left top
         ctx.moveTo(0, 0);
         // right top
-        ctx.lineTo(this.gridSetting!.cellWidth, 0);
+        ctx.lineTo(this.gridSetting!.cellWidthWithHtmlZoom, 0);
         // right bottom
         ctx.lineTo(
-            this.gridSetting!.cellWidth,
-            this.gridSetting!.cellHeight + this.gridSetting!.increaseBorder
+            this.gridSetting!.cellWidthWithHtmlZoom,
+            this.gridSetting!.cellHeightWithHtmlZoom + this.gridSetting!.increaseBorderHtmlZoom
         );
         // left bottom
         ctx.lineTo(
             0,
-            this.gridSetting!.cellHeight + this.gridSetting!.increaseBorder
+            this.gridSetting!.cellHeightWithHtmlZoom + this.gridSetting!.increaseBorderHtmlZoom
         );
         ctx.lineTo(0, 0);
         ctx.stroke();
@@ -126,8 +138,8 @@ export class CreateCell {
             0,
             this.gridSetting!.cellWidthWithHtmlZoom,
             this.gridSetting!.mainTextHeightWithHtmlZoom,
-            this.gridSetting!.subFontWithHtmlZoom,
-            this.gridSetting!.subFontsizeithHtmlZoom,
+            this.gridSetting!.fontWithHtmlZoom,
+            this.gridSetting!.mainFontSizeHtmlZoom,
             this.gridSetting!.mainFontColor,
             TextAlignmentEnum.Center,
             BaselineAlignmentEnum.Center
@@ -139,11 +151,11 @@ export class CreateCell {
             ctx,
             text,
             0,
-            this.gridSetting!.mainTextHeight,
-            this.gridSetting!.cellWidth,
-            this.gridSetting!.firstSubTextHeight,
-            this.gridSetting!.subFont,
-            10,
+            this.gridSetting!.mainTextHeightWithHtmlZoom,
+            this.gridSetting!.cellWidthWithHtmlZoom,
+            this.gridSetting!.firstSubTextHeightWithHtmlZoom,
+            this.gridSetting!.subFontWithHtmlZoom,
+            this.gridSetting!.firstSubFontSizeHtmlZoom,
             this.gridSetting!.subFontColor,
             TextAlignmentEnum.Center,
             BaselineAlignmentEnum.Center
@@ -155,11 +167,11 @@ export class CreateCell {
             ctx,
             text,
             0,
-            this.gridSetting!.mainTextHeight + this.gridSetting!.firstSubTextHeight,
-            this.gridSetting!.cellWidth,
-            this.gridSetting!.secondSubTextHeight,
-            this.gridSetting!.subFont,
-            10,
+            this.gridSetting!.mainTextHeightWithHtmlZoom + this.gridSetting!.firstSubTextHeightWithHtmlZoom,
+            this.gridSetting!.cellWidthWithHtmlZoom,
+            this.gridSetting!.secondSubTextHeightWithHtmlZoom,
+            this.gridSetting!.subFontWithHtmlZoom,
+            this.gridSetting!.secondSubFontSizeHtmlZoom,
             this.gridSetting!.subFontColor,
             TextAlignmentEnum.Left,
             BaselineAlignmentEnum.Center
@@ -168,12 +180,12 @@ export class CreateCell {
 
     drawSimpleBorder(ctx: CanvasRenderingContext2D) {
         ctx.strokeStyle = this.gridSetting!.borderColor;
-        ctx.lineWidth = 0.5;
+        ctx.lineWidth = this.gridSetting!.increaseBorderHtmlZoom;
         ctx.strokeRect(
             0,
             0,
-            this.gridSetting!.cellWidth + this.gridSetting!.increaseBorder,
-            this.gridSetting!.cellHeight + this.gridSetting!.increaseBorder
+            this.gridSetting!.cellWidthWithHtmlZoom + this.gridSetting!.increaseBorderHtmlZoom,
+            this.gridSetting!.cellHeightWithHtmlZoom + this.gridSetting!.increaseBorderHtmlZoom
         );
     }
 }

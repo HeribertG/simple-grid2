@@ -17,9 +17,9 @@ export interface IGridCell {
 
 export class GridCell implements IGridCell {
 
-  mainText = null;
-  firstSubText = null;
-  secondSubText = null;
+  mainText = '';
+  firstSubText = '';
+  secondSubText = '';
   frozen = false;
   confirmed = false;
   sealed = false;
@@ -29,8 +29,39 @@ export class GridCell implements IGridCell {
 
   isEmpty(): boolean {
 
-    return (!this.mainText && !this.firstSubText && !this.secondSubText) ||
-      (this.mainText === '' && this.firstSubText === '' && this.secondSubText === '');
+    return (!this.mainText && !this.firstSubText && !this.secondSubText);
   }
 
+  hasSubText(): boolean {
+    return !( !this.firstSubText && !this.secondSubText);
+  }
+
+}
+
+
+export interface IHeaderCell {
+
+  titel: string | null;
+  frozen: boolean;
+  cellType: CellTypeEnum;
+  mainTextAlignment: TextAlignmentEnum;
+  subTextAlignment: TextAlignmentEnum;
+}
+
+
+export class HeaderCell implements IHeaderCell {
+
+
+  titel = '';
+  frozen = false;
+  cellType = CellTypeEnum.Standard;
+  mainTextAlignment = TextAlignmentEnum.Center;
+  subTextAlignment = TextAlignmentEnum.Center;
+
+  isEmpty(): boolean {
+
+    return (!this.titel )
+  }
+
+  
 }

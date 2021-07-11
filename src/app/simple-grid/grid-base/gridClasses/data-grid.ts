@@ -1,4 +1,4 @@
-import { GridCell } from "./grid-cell";
+import { GridCell, HeaderCell } from "./grid-cell";
 
 export class GridData {
  
@@ -18,10 +18,20 @@ export class GridData {
     getItem(row: number, col: number): GridCell {
       const c = new GridCell();
   
+      c.mainText = 'Zelle ' + row.toString() + ' / ' + col.toString();
+      c.secondSubText = row.toString() + ' / ' + col.toString();
+
+      
       return c;
     }
   
-    
+    getHeaderItem( col: number) :HeaderCell{
+      const c = new HeaderCell();
+      c.titel = 'Kollone '   + col.toString();
+
+      return c;
+    }
+
     get rows(): number {
       return this.rowsNumber;
     }

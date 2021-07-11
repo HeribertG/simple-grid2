@@ -21,12 +21,12 @@ import { VScrollbarComponent } from '../v-scrollbar/v-scrollbar.component';
 })
 export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  public gridData: GridData | undefined | null = new GridData();
-  public gridSetting: GridSetting | undefined | null = new GridSetting();
-  private cellManipulation: GridCellManipulation | undefined | null = new GridCellManipulation(this.gridSetting!);
-  private gridCellContextMenu: GridCellContextMenu | undefined | null = new GridCellContextMenu(this.gridData!);
-  private createCell: CreateCell | undefined | null = new CreateCell(this.gridSetting!, this.gridData!);
-  private createHeader: CreateHeader | undefined | null = new CreateHeader(this.gridSetting!);
+  // public gridData: GridData | undefined | null = new GridData();
+  //  public gridSetting: GridSetting | undefined | null = new GridSetting();
+  private cellManipulation: GridCellManipulation | undefined | null;
+  private gridCellContextMenu: GridCellContextMenu | undefined | null;
+  private createCell: CreateCell | undefined | null;
+  private createHeader: CreateHeader | undefined | null;
   resizeWindow: (() => void) | undefined;
   visibilitychangeWindow: (() => void) | undefined;
 
@@ -46,6 +46,8 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
   contextMenuPosition = { x: '0px', y: '0px' };
 
+  @Input() gridData: GridData | undefined | null;
+  @Input() gridSetting: GridSetting | undefined | null
 
   @Input() vScrollbar: VScrollbarComponent | undefined | null;
   @Input() hScrollbar: HScrollbarComponent | undefined | null;
@@ -99,6 +101,10 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
+    this.cellManipulation = new GridCellManipulation(this.gridSetting!);
+    this.gridCellContextMenu = new GridCellContextMenu(this.gridData!);
+    this.createCell = new CreateCell(this.gridSetting!, this.gridData!);
+    this.createHeader = new CreateHeader(this.gridSetting!, this.gridData!);
     this.init();
 
   }
@@ -172,6 +178,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   refreshGrid(): void {
+
     this.canvas!.height = this.canvas!.clientHeight;
     this.canvas!.width = this.canvas!.clientWidth;
 
@@ -257,7 +264,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
 
-    this.refreshGrid();
+    // this.refreshGrid();
   }
 
   onShrinkGrid() {
@@ -273,7 +280,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     this.renderCanvas!.height = height;
     this.renderCanvas!.width = width;
 
-    this.refreshGrid();
+    // this.refreshGrid();
   }
 
   refreshCell(pos: Position) {

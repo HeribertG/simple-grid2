@@ -1,15 +1,18 @@
 import { MDraw } from "../../helpers/draw-helper";
 import { BaselineAlignmentEnum, TextAlignmentEnum } from "../../helpers/enums/cell-settings.enum";
 import { Gradient3DBorderStyleEnum } from "../../helpers/enums/draw.enum";
+import { GridData } from "./data-grid";
 import { GridSetting } from "./grid-setting";
 
 export class CreateHeader {
 
     private emptyHeader: ImageData |null|undefined;
     private gridSetting: GridSetting | undefined | null;
+    private gridData: GridData | undefined | null;
 
-    constructor(gridSetting: GridSetting) {
+    constructor(gridSetting: GridSetting, gridData: GridData) {
         this.gridSetting = gridSetting;
+        this.gridData = gridData;
     }
 
     destroy(): void {
@@ -50,28 +53,25 @@ export class CreateHeader {
   
       ctx!.putImageData(this.emptyHeader!, 0, 0);
   
-      this.drawText(ctx!, this.getTitle(col));
+      const headerCell = this.gridData?.getHeaderItem(col);
+      this.drawText(ctx!,  headerCell!.titel);
   
       return  ctx!.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
   
   
     }
   
-    getTitle(column: number): string {
-  
-     return '';
-    }
-  
+      
     private drawText(ctx: CanvasRenderingContext2D, text: string) {
   
       MDraw.drawText(ctx,
         text,
         0,
         0,
-        this.gridSetting!.cellWidth,
-        this.gridSetting!.cellHeaderHeight,
-        this.gridSetting!.font,
-        12,
+        this.gridSetting!.cellWidthWithHtmlZoom,
+        this.gridSetting!.cellHeaderHeightWithHtmlZoom,
+        this.gridSetting!.fontWithHtmlZoom,
+        this.gridSetting!.mainFontSizeHtmlZoom,
         this.gridSetting!.headerForeGroundColor,
         TextAlignmentEnum.Center,
         BaselineAlignmentEnum.Center);

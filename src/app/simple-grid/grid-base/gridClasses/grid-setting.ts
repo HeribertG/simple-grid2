@@ -5,27 +5,44 @@ export class GridSetting {
   fixRows = 1;
   // tslint:disable-next-line:variable-name
   private _zoom = 1;
+  // tslint:disable-next-line:variable-name
+  private _cellHeight = 50;
+  // tslint:disable-next-line:variable-name
+  private _cellWidth = 90;
+  // tslint:disable-next-line:variable-name
+  private _mainTextHeight = 23;
+  mainFontSize = 12;
+
+  // tslint:disable-next-line:variable-name
+  private _firstSubTextHeight = 12;
+  firstSubFontSize = 10;
+  // tslint:disable-next-line:variable-name
+  private _secondSubTextHeight = 12;
+  secondSubFontSize = 10;
 
   increaseBorder = (0.5);
-  cellHeight = 50 * this.zoom;
-  cellWidth = 90 * this.zoom;
-  mainTextHeight = 23 * this.zoom;
-  firstSubTextHeight = 12 * this.zoom;
-  secondSubTextHeight = 12 * this.zoom;
+  cellHeight = this._cellHeight * this.zoom;
+  cellWidth = this._cellWidth * this.zoom;
+  mainTextHeight = this._mainTextHeight * this.zoom;
+  firstSubTextHeight = this._firstSubTextHeight * this.zoom;
+  secondSubTextHeight = this._secondSubTextHeight * this.zoom;
   cellHeaderHeight = 30 * this.zoom;
-  font = 'normal ' + 12 * this.zoom + 'px Arial';
-  subFont = 'normal ' + 10 * this.zoom + 'px Arial';
+  font = 'normal ' + this.mainFontSize * this.zoom + 'px Arial';
+  firstSubFontFont = 'normal ' + this.firstSubFontSize * this.zoom + 'px Arial';
 
-  cellHeightWithHtmlZoom = 50 * this.zoom;
-  cellWidthWithHtmlZoom = 90 * this.zoom;
-  mainTextHeightWithHtmlZoom = 23 * this.zoom;
-  firstSubTextHeightWithHtmlZoom = 12 * this.zoom;
-  secondSubTextHeightWithHtmlZoom = 12 * this.zoom;
+  cellHeightWithHtmlZoom = this._cellHeight * this.zoom;
+  cellWidthWithHtmlZoom = this._cellWidth * this.zoom;
+  mainTextHeightWithHtmlZoom = this._mainTextHeight * this.zoom;
+  mainFontSizeHtmlZoom = this.mainFontSize * this.zoom;
+  firstSubFontSizeHtmlZoom = this.firstSubFontSize * this.zoom;
+  secondSubFontSizeHtmlZoom = this.secondSubFontSize * this.zoom;
+  firstSubTextHeightWithHtmlZoom = this._firstSubTextHeight * this.zoom;
+  secondSubTextHeightWithHtmlZoom = this._firstSubTextHeight * this.zoom;
   cellHeaderHeightWithHtmlZoom = 30 * this.zoom;
-  fontWithHtmlZoom = 'normal ' + 12 * this.zoom + 'px Arial';
-  subFontWithHtmlZoom = 'normal ' + 10 * this.zoom + 'px Arial';
-  subFontsizeithHtmlZoom = Math.round((12  * this.htmlZoom) * 10) / 10;
-
+  fontWithHtmlZoom = 'normal ' + this.mainFontSize * this.zoom + 'px Arial';
+  subFontWithHtmlZoom = 'normal ' + this.firstSubFontSize * this.zoom + 'px Arial';
+  subFontsizeithHtmlZoom = Math.round((this._firstSubTextHeight * this.htmlZoom) * this.firstSubFontSize) / this.firstSubFontSize;
+  increaseBorderHtmlZoom = (0.5 * this.zoom);
 
   rowHeaderIconWith = 20;
   rowHeaderIconHeight = 20;
@@ -45,11 +62,8 @@ export class GridSetting {
   headerBackGroundColor = '#FFFFFF';
   headerForeGroundColor = '#4d4d4d';
 
-  focusBorderColor = '#1E90FF';
+  focusBorderColor = '#1Ethis._cellWidthFF';
 
-
-  weekday = new Array(7);
-  monthsName = new Array(12);
 
   clipboardMode: ClipboardModeEnum = ClipboardModeEnum.All;
   // tslint:disable-next-line:variable-name
@@ -69,44 +83,47 @@ export class GridSetting {
   get htmlZoom(): number {
     return this._zoom * MDraw.pixelRatio();
   }
-  
+
 
   reset() {
     this.increaseBorder = (0.5);
-    this.cellHeight = Math.round(50 * this.zoom);
-    this.cellWidth = Math.round(90 * this.zoom);
-    this.mainTextHeight = Math.round(23 * this.zoom);
-    this.firstSubTextHeight = Math.round(12 * this.zoom);
-    this.secondSubTextHeight = Math.round(12 * this.zoom);
+    this.cellHeight = Math.round(this._cellHeight * this.zoom);
+    this.cellWidth = Math.round(this._cellWidth * this.zoom);
+    this.mainTextHeight = Math.round(this._mainTextHeight * this.zoom);
+    this.firstSubTextHeight = Math.round(this._firstSubTextHeight * this.zoom);
+    this.secondSubTextHeight = Math.round(this._firstSubTextHeight * this.zoom);
     this.cellHeaderHeight = Math.round(30 * this.zoom);
-    const fontsize = Math.round((12 * this.zoom) * 10) / 10;
+    const fontsize = Math.round((this.mainFontSize * this.zoom) * 10) / 10;
     this.font = 'normal ' + fontsize + 'px Arial';
-    const subFontsize = Math.round((10 * this.zoom) * 10) / 10;
-    this.subFont = 'normal ' + subFontsize + 'px Arial';
+    const firstSubFontSize = Math.round((this.firstSubFontSize * this.zoom) * 10) / 10;
+    this.firstSubFontFont = 'normal ' + firstSubFontSize + 'px Arial';
 
-    this.cellHeightWithHtmlZoom = 50 * this.htmlZoom;
-    this.cellWidthWithHtmlZoom = 90 * this.htmlZoom;
-    this.mainTextHeightWithHtmlZoom = 23 * this.htmlZoom;
-    this.firstSubTextHeightWithHtmlZoom = 12 * this.htmlZoom;
-    this.secondSubTextHeightWithHtmlZoom = 12 * this.htmlZoom;
+    this.increaseBorderHtmlZoom = (0.5 * this.htmlZoom);
+    this.cellHeightWithHtmlZoom = this._cellHeight * this.htmlZoom;
+    this.cellWidthWithHtmlZoom = this._cellWidth * this.htmlZoom;
+    this.mainTextHeightWithHtmlZoom = this._mainTextHeight * this.htmlZoom;
+    this.firstSubTextHeightWithHtmlZoom = this._firstSubTextHeight * this.htmlZoom;
+    this.secondSubTextHeightWithHtmlZoom = this._firstSubTextHeight * this.htmlZoom;
     this.cellHeaderHeightWithHtmlZoom = 30 * this.htmlZoom;
-    this.fontWithHtmlZoom = 'normal ' + 12 * this.htmlZoom + 'px Arial';
-    this.subFontWithHtmlZoom = 'normal ' + 10 * this.htmlZoom + 'px Arial'
-    this.subFontsizeithHtmlZoom = Math.round((12  * this.htmlZoom) * 10) / 10;
+    this.mainFontSizeHtmlZoom = this.mainFontSize * this.htmlZoom ;
+    this.firstSubFontSizeHtmlZoom = this.firstSubFontSize * this.htmlZoom ;
+    this.fontWithHtmlZoom = 'normal ' + this.mainFontSize * this.htmlZoom + 'px Arial';
+    this.subFontWithHtmlZoom = 'normal ' + this.firstSubFontSize * this.htmlZoom + 'px Arial'
+    this.subFontsizeithHtmlZoom = Math.round((this._firstSubTextHeight * this.htmlZoom) * 10) / 10;
 
   }
 
 
   public get lastPixelRatio(): number {
-    return this._lastPixelRatio ;
+    return this._lastPixelRatio;
   }
   public set lastPixelRatio(value: number) {
-    
-    if(this._lastPixelRatio !== value){
+
+    if (this._lastPixelRatio !== value) {
       this._lastPixelRatio = value;
       this.reset();
     }
-   
+
 
   }
 
