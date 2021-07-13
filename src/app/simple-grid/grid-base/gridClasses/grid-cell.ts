@@ -8,10 +8,6 @@ export interface IGridCell {
   firstSubText: string;
   secondSubText: string;
   backgroundColor: string;
-  colspan: number;
-  rowSpan: number;
-  originalCol: number;
-  originalRow: number;
   frozen: boolean;
   confirmed: boolean;
   sealed: boolean;
@@ -27,10 +23,6 @@ export class GridCell implements IGridCell {
   firstSubText = '';
   secondSubText = '';
   backgroundColor = '';
-  colspan = 0;
-  rowSpan = 0;
-  originalCol = -1;
-  originalRow = -1;
   frozen = false;
   confirmed = false;
   sealed = false;
@@ -50,29 +42,28 @@ export class GridCell implements IGridCell {
 }
 
 export interface IGridCellResult {
-  colspan: number;
+  colSpan: number;
   rowSpan: number;
   originalCol: number;
   originalRow: number;
-  cellHeightWithHtmlZoom: number;
-  cellWidthWithHtmlZoom: number;
-  mainTextHeightWithHtmlZoom: number;
-  firstSubTextHeightWithHtmlZoom: number;
-  secondSubTextHeightWithHtmlZoom: number;
+  // cellHeightWithHtmlZoom: number;
+  // cellWidthWithHtmlZoom: number;
+  // mainTextHeightWithHtmlZoom: number;
+  // firstSubTextHeightWithHtmlZoom: number;
+  // secondSubTextHeightWithHtmlZoom: number;
 
 }
 
-
 export class GridCellResult implements IGridCellResult {
-  colspan = 0;
-  rowSpan = 0;
+  colSpan = -1;
+  rowSpan = -1;
   originalCol = -1;
   originalRow = -1;
-  cellHeightWithHtmlZoom = 0;
-  cellWidthWithHtmlZoom = 0;
-  mainTextHeightWithHtmlZoom = 0;
-  firstSubTextHeightWithHtmlZoom = 0;
-  secondSubTextHeightWithHtmlZoom = 0;
+  // cellHeightWithHtmlZoom = 0;
+  // cellWidthWithHtmlZoom = 0;
+  // mainTextHeightWithHtmlZoom = 0;
+  // firstSubTextHeightWithHtmlZoom = 0;
+  // secondSubTextHeightWithHtmlZoom = 0;
 
 }
 export interface IHeaderCell {
@@ -83,7 +74,6 @@ export interface IHeaderCell {
   mainTextAlignment: TextAlignmentEnum;
   subTextAlignment: TextAlignmentEnum;
 }
-
 
 export class HeaderCell implements IHeaderCell {
 

@@ -8,6 +8,7 @@ import { GridData } from '../gridClasses/data-grid';
 import { GridCellContextMenu } from '../gridClasses/grid-cell-context-menu';
 import { GridCellManipulation } from '../gridClasses/grid-cell-manipulation';
 import { GridSetting } from '../gridClasses/grid-setting';
+import { MergeCellCollection } from '../gridClasses/merge-cell';
 import { Position } from '../gridClasses/position';
 import { HScrollbarComponent } from '../h-scrollbar/h-scrollbar.component';
 import { ScrollGridService } from '../services/scroll-grid.service';
@@ -26,6 +27,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   private gridCellContextMenu: GridCellContextMenu | undefined | null;
   private createCell: CreateCell | undefined | null;
   private createHeader: CreateHeader | undefined | null;
+  
   resizeWindow: (() => void) | undefined;
   visibilitychangeWindow: (() => void) | undefined;
 
@@ -120,7 +122,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     this.createCell!.destroy();
     this.createCell = null;
 
-
+    this.gridData?.mergeCellCollection.clear();
     this.gridData = null;
     this.ctx = null;
     this.canvas = null;
@@ -660,23 +662,26 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     const tmpCol: number = col + this.scrollGrid.hScrollValue;
     const cellWidth = this.gridSetting!.cellWidth;
     const cellHeight = this.gridSetting!.cellHeight;
-    const cellWidthWithHtmlZoom = this.gridSetting!.cellWidthWithHtmlZoom;
-    const cellHeightWithHtmlZoom = this.gridSetting!.cellHeightWithHtmlZoom;
+    // const cellWidthWithHtmlZoom = this.gridSetting!.cellWidthWithHtmlZoom;
+    // const cellHeightWithHtmlZoom = this.gridSetting!.cellHeightWithHtmlZoom;
 
     if (tmpRow < this.gridData!.rows && tmpCol < this.gridData!.columns) {
 
       const result = this.createCell!.createCell(tmpRow, tmpCol);
+      
+      const originalCol = result[1]!.originalCol +(col-tmpCol);
+      const originalRow = result[1]!.originalRow +(row-tmpRow);
 
       this.renderCanvasCtx!.drawImage(
         result[0],
         0,
         0,
-        cellWidthWithHtmlZoom,
-        cellHeightWithHtmlZoom,
-        col * cellWidth,
-        row * cellHeight,
-        cellWidth,
-        cellHeight
+        result[0].width,
+        result[0].height,
+        originalCol * cellWidth,
+        originalRow * cellHeight,
+        cellWidth * result[1]!.colSpan,
+        cellHeight * result[1]!.rowSpan
 
       );
 

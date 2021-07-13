@@ -1,13 +1,15 @@
 import { WeekDay } from "@angular/common";
 import { WeekDaysEnum } from "../../helpers/enums/grid-settings.enum";
 import { GridCell, HeaderCell } from "./grid-cell";
+import { MergeCellCollection } from "./merge-cell";
 
 export class GridData {
 
   weekday = new Array(7);
   monthsName = new Array(12);
+  mergeCellCollection:MergeCellCollection = new MergeCellCollection();;
 
-  public startDate: Date;
+  startDate: Date;
 
   private rowsNumber = 100;
   private colsNumber = 100;
@@ -70,7 +72,7 @@ export class GridData {
 
   getHeaderItem(col: number): HeaderCell {
     const c = new HeaderCell();
-    
+
     const today: Date = new Date(this.startDate);
     today.setDate(today.getDate() + col);
     c.titel = this.formatDate(today);
@@ -117,7 +119,7 @@ export class GridData {
   }
 
   weekdayName(column: number) {
-   
+
 
     const today: Date = new Date(this.startDate);
     today.setDate(today.getDate() + column);
@@ -128,6 +130,6 @@ export class GridData {
   private formatDate(date: Date) {
 
     const day = date.getDate();
-    return  this.weekday[date.getDay()] + ' ' +  day + '. ' + this.monthsName[date.getMonth()] + '.';
+    return this.weekday[date.getDay()] + ' ' + day + '. ' + this.monthsName[date.getMonth()] + '.';
   }
 }
