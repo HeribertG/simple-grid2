@@ -1,9 +1,9 @@
 import { MDraw } from "../../helpers/draw-helper";
 import { BaselineAlignmentEnum, TextAlignmentEnum } from "../../helpers/enums/cell-settings.enum";
-import { Gradient3DBorderStyleEnum } from "../../helpers/enums/draw.enum";
 import { GridData } from "./data-grid";
 import { GridCell, GridCellResult } from "./grid-cell";
 import { GridSetting } from "./grid-setting";
+import { IMergeCell } from "./merge-cell";
 
 export class CreateCell {
 
@@ -73,54 +73,72 @@ export class CreateCell {
         ctx.restore();
     }
 
-    createCell(row: number, col: number): [canvas:HTMLCanvasElement,gridCellResult:GridCellResult|undefined] {
+    createCell(row: number, col: number): [canvas: HTMLCanvasElement, gridCellResult: GridCellResult | undefined] {
         const gridCell = this.gridData!.getItem(row, col);
+
         const gridCellResult = new GridCellResult();
-       
-       const cellCanvas =  this.createCanvas(gridCell);
+        const mergeCell = this.gridData!.mergeCellCollection.itemByColRow(row, col);
+
+        this.setGridCellResult(row, col, gridCellResult, mergeCell);
+
+
+        const cellCanvas = this.createCanvas(gridCell, mergeCell);
         const ctx = cellCanvas.getContext('2d');
 
         if (!gridCell.isEmpty()) {
 
-            this.drawMainText(ctx!, gridCell);
+            this.drawMainText(ctx!, gridCell, mergeCell);
             if (gridCell.hasSubText()) {
                 if (gridCell.firstSubText) {
-                    this.drawFirstSubText(ctx!, gridCell);
+                    this.drawFirstSubText(ctx!, gridCell, mergeCell);
                 }
                 if (gridCell.secondSubText) {
-                    this.drawSecondSubText(ctx!, gridCell);
+                    this.drawSecondSubText(ctx!, gridCell, mergeCell);
                 }
             }
 
         }
 
-        //  MDraw.drawBorder(ctx!, 0, 0,  this.gridSetting!.cellWidthWithHtmlZoom, tempCanvas.height, '#FF5733', 3, Gradient3DBorderStyleEnum.Sunken)
-
-        // this.drawBorder(ctx!);
-        this.drawSimpleBorder(ctx!);
-        
 
         return [cellCanvas, gridCellResult];
 
     }
 
-    private createCanvas(gridCell: GridCell): HTMLCanvasElement {
+    private setGridCellResult(row: number, col: number, gridCellResult: GridCellResult, mergeCell: IMergeCell | undefined): void {
+        gridCellResult.originalRow = row;
+        gridCellResult.originalCol = col;
+        gridCellResult.rowSpan = 1;
+        gridCellResult.colSpan = 1;
 
-        let colSpan = gridCell.colspan;
-        let rowSpan = gridCell.rowSpan;
+        if (mergeCell) {
+            gridCellResult.originalRow = mergeCell.position.row;
+            gridCellResult.originalCol = mergeCell.position.column;
+            gridCellResult.rowSpan = mergeCell.rowSpan;
+            gridCellResult.colSpan = mergeCell.colSpan;
+        }
+    }
 
-        if (colSpan <= 1) { colSpan = 1; }
-        if (rowSpan <= 1) { rowSpan = 1; }
+    private createCanvas(gridCell: GridCell, mergeCell: IMergeCell | undefined): HTMLCanvasElement {
+
+
+        let colSpan = 1;
+        let rowSpan = 1;
+
+        if (mergeCell) {
+            colSpan = mergeCell.colSpan;
+            rowSpan = mergeCell.rowSpan;
+        }
+
 
         let backGroundColor = this.gridSetting!.backGroundColor;
 
-        if (gridCell.backgroundColor){backGroundColor = gridCell.backgroundColor;}
+        if (gridCell.backgroundColor) { backGroundColor = gridCell.backgroundColor; }
 
-            return this.createEmptyCanvas(
-                backGroundColor,
-                (this.gridSetting!.cellWidthWithHtmlZoom * colSpan) + this.gridSetting!.increaseBorder,
-                (this.gridSetting!.cellHeightWithHtmlZoom * rowSpan) + this.gridSetting!.increaseBorder,
-                false);
+        return this.createEmptyCanvas(
+            backGroundColor,
+            (this.gridSetting!.cellWidthWithHtmlZoom * colSpan) + this.gridSetting!.increaseBorder,
+            (this.gridSetting!.cellHeightWithHtmlZoom * rowSpan) + this.gridSetting!.increaseBorder,
+            false);
     }
 
     private drawBorder(ctx: CanvasRenderingContext2D): void {
@@ -146,12 +164,14 @@ export class CreateCell {
         ctx.stroke();
     }
 
-    private drawMainText(ctx: CanvasRenderingContext2D, gridCell: GridCell) {
-        let colSpan = gridCell.colspan;
-        let rowSpan = gridCell.rowSpan;
+    private drawMainText(ctx: CanvasRenderingContext2D, gridCell: GridCell, mergeCell: IMergeCell | undefined) {
+        let colSpan = 1;
+        let rowSpan = 1;
 
-        if (colSpan <= 1) { colSpan = 1 }
-        if (rowSpan <= 1) { rowSpan = 1 }
+        if (mergeCell) {
+            colSpan = mergeCell.colSpan;
+            rowSpan = mergeCell.rowSpan;
+        }
 
         MDraw.drawText(
             ctx,
@@ -168,13 +188,15 @@ export class CreateCell {
         );
     }
 
-    private drawFirstSubText(ctx: CanvasRenderingContext2D, gridCell: GridCell) {
+    private drawFirstSubText(ctx: CanvasRenderingContext2D, gridCell: GridCell, mergeCell: IMergeCell | undefined) {
+        let colSpan = 1;
+        let rowSpan = 1;
 
-        let colSpan = gridCell.colspan;
-        let rowSpan = gridCell.rowSpan;
+        if (mergeCell) {
+            colSpan = mergeCell.colSpan;
+            rowSpan = mergeCell.rowSpan;
+        }
 
-        if (colSpan <= 1) { colSpan = 1 }
-        if (rowSpan <= 1) { rowSpan = 1 }
 
         MDraw.drawText(
             ctx,
@@ -191,13 +213,15 @@ export class CreateCell {
         );
     }
 
-    private drawSecondSubText(ctx: CanvasRenderingContext2D, gridCell: GridCell) {
+    private drawSecondSubText(ctx: CanvasRenderingContext2D, gridCell: GridCell, mergeCell: IMergeCell | undefined) {
 
-        let colSpan = gridCell.colspan;
-        let rowSpan = gridCell.rowSpan;
+        let colSpan = 1;
+        let rowSpan = 1;
 
-        if (colSpan <= 1) { colSpan = 1 }
-        if (rowSpan <= 1) { rowSpan = 1 }
+        if (mergeCell) {
+            colSpan = mergeCell.colSpan;
+            rowSpan = mergeCell.rowSpan;
+        }
 
         MDraw.drawText(
             ctx,
@@ -215,13 +239,16 @@ export class CreateCell {
     }
 
     drawSimpleBorder(ctx: CanvasRenderingContext2D) {
+
+
+
         ctx.strokeStyle = this.gridSetting!.borderColor;
         ctx.lineWidth = this.gridSetting!.increaseBorderHtmlZoom;
         ctx.strokeRect(
             0,
             0,
-            this.gridSetting!.cellWidthWithHtmlZoom + this.gridSetting!.increaseBorderHtmlZoom,
-            this.gridSetting!.cellHeightWithHtmlZoom + this.gridSetting!.increaseBorderHtmlZoom
+            ctx.canvas.width + this.gridSetting!.increaseBorderHtmlZoom,
+            ctx.canvas.height + this.gridSetting!.increaseBorderHtmlZoom,
         );
     }
 }
