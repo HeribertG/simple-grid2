@@ -241,6 +241,11 @@ export abstract class MDraw {
     return tmp > 1 ? tmp : 1;
   }
 
+  public static scale(): number {
+    var browserZoomLevel = window.devicePixelRatio ;
+    return browserZoomLevel > 1 ? browserZoomLevel : 1;
+  }
+
   public static createSVG(
     data: string,
     fillColor: string,

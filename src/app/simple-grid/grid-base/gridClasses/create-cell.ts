@@ -2,11 +2,11 @@ import { MDraw } from "../../helpers/draw-helper";
 import { BaselineAlignmentEnum, TextAlignmentEnum } from "../../helpers/enums/cell-settings.enum";
 import { Gradient3DBorderStyleEnum } from "../../helpers/enums/draw.enum";
 import { GridData } from "./data-grid";
+import { GridCell, GridCellResult } from "./grid-cell";
 import { GridSetting } from "./grid-setting";
 
 export class CreateCell {
 
-    private lastLine = 5;
     private gridSetting: GridSetting | undefined | null;
     private gridData: GridData | undefined | null;
 
@@ -73,38 +73,54 @@ export class CreateCell {
         ctx.restore();
     }
 
-    createCell(row: number, col: number): HTMLCanvasElement {
-        const tempCanvas: HTMLCanvasElement = this.createEmptyCanvas(
-            this.gridSetting!.backGroundColor,
-            this.gridSetting!.cellWidthWithHtmlZoom + this.gridSetting!.increaseBorder,
-            this.gridSetting!.cellHeightWithHtmlZoom + this.gridSetting!.increaseBorder,
-            false);
-
-        const ctx = tempCanvas.getContext('2d');
-
+    createCell(row: number, col: number): [canvas:HTMLCanvasElement,gridCellResult:GridCellResult|undefined] {
         const gridCell = this.gridData!.getItem(row, col);
-
+        const gridCellResult = new GridCellResult();
+       
+       const cellCanvas =  this.createCanvas(gridCell);
+        const ctx = cellCanvas.getContext('2d');
 
         if (!gridCell.isEmpty()) {
-            this.drawMainText(ctx!, gridCell.mainText);
+
+            this.drawMainText(ctx!, gridCell);
             if (gridCell.hasSubText()) {
                 if (gridCell.firstSubText) {
-                    this.drawFirstSubText(ctx!, gridCell.firstSubText);
+                    this.drawFirstSubText(ctx!, gridCell);
                 }
                 if (gridCell.secondSubText) {
-                    this.drawSecondSubText(ctx!, gridCell.secondSubText);
+                    this.drawSecondSubText(ctx!, gridCell);
                 }
             }
 
         }
 
-       //  MDraw.drawBorder(ctx!, 0, 0,  this.gridSetting!.cellWidthWithHtmlZoom, tempCanvas.height, '#FF5733', 3, Gradient3DBorderStyleEnum.Sunken)
+        //  MDraw.drawBorder(ctx!, 0, 0,  this.gridSetting!.cellWidthWithHtmlZoom, tempCanvas.height, '#FF5733', 3, Gradient3DBorderStyleEnum.Sunken)
 
         // this.drawBorder(ctx!);
         this.drawSimpleBorder(ctx!);
+        
 
-        return tempCanvas;
+        return [cellCanvas, gridCellResult];
 
+    }
+
+    private createCanvas(gridCell: GridCell): HTMLCanvasElement {
+
+        let colSpan = gridCell.colspan;
+        let rowSpan = gridCell.rowSpan;
+
+        if (colSpan <= 1) { colSpan = 1; }
+        if (rowSpan <= 1) { rowSpan = 1; }
+
+        let backGroundColor = this.gridSetting!.backGroundColor;
+
+        if (gridCell.backgroundColor){backGroundColor = gridCell.backgroundColor;}
+
+            return this.createEmptyCanvas(
+                backGroundColor,
+                (this.gridSetting!.cellWidthWithHtmlZoom * colSpan) + this.gridSetting!.increaseBorder,
+                (this.gridSetting!.cellHeightWithHtmlZoom * rowSpan) + this.gridSetting!.increaseBorder,
+                false);
     }
 
     private drawBorder(ctx: CanvasRenderingContext2D): void {
@@ -130,14 +146,20 @@ export class CreateCell {
         ctx.stroke();
     }
 
-    private drawMainText(ctx: CanvasRenderingContext2D, text: string) {
+    private drawMainText(ctx: CanvasRenderingContext2D, gridCell: GridCell) {
+        let colSpan = gridCell.colspan;
+        let rowSpan = gridCell.rowSpan;
+
+        if (colSpan <= 1) { colSpan = 1 }
+        if (rowSpan <= 1) { rowSpan = 1 }
+
         MDraw.drawText(
             ctx,
-            text,
+            gridCell.mainText,
             0,
             0,
-            this.gridSetting!.cellWidthWithHtmlZoom,
-            this.gridSetting!.mainTextHeightWithHtmlZoom,
+            (this.gridSetting!.cellWidthWithHtmlZoom * colSpan),
+            (this.gridSetting!.mainTextHeightWithHtmlZoom * rowSpan),
             this.gridSetting!.fontWithHtmlZoom,
             this.gridSetting!.mainFontSizeHtmlZoom,
             this.gridSetting!.mainFontColor,
@@ -146,13 +168,20 @@ export class CreateCell {
         );
     }
 
-    private drawFirstSubText(ctx: CanvasRenderingContext2D, text: string) {
+    private drawFirstSubText(ctx: CanvasRenderingContext2D, gridCell: GridCell) {
+
+        let colSpan = gridCell.colspan;
+        let rowSpan = gridCell.rowSpan;
+
+        if (colSpan <= 1) { colSpan = 1 }
+        if (rowSpan <= 1) { rowSpan = 1 }
+
         MDraw.drawText(
             ctx,
-            text,
+            gridCell.firstSubText,
             0,
             this.gridSetting!.mainTextHeightWithHtmlZoom,
-            this.gridSetting!.cellWidthWithHtmlZoom,
+            (this.gridSetting!.cellWidthWithHtmlZoom * colSpan),
             this.gridSetting!.firstSubTextHeightWithHtmlZoom,
             this.gridSetting!.subFontWithHtmlZoom,
             this.gridSetting!.firstSubFontSizeHtmlZoom,
@@ -162,13 +191,20 @@ export class CreateCell {
         );
     }
 
-    private drawSecondSubText(ctx: CanvasRenderingContext2D, text: string) {
+    private drawSecondSubText(ctx: CanvasRenderingContext2D, gridCell: GridCell) {
+
+        let colSpan = gridCell.colspan;
+        let rowSpan = gridCell.rowSpan;
+
+        if (colSpan <= 1) { colSpan = 1 }
+        if (rowSpan <= 1) { rowSpan = 1 }
+
         MDraw.drawText(
             ctx,
-            text,
+            gridCell.secondSubText,
             0,
             this.gridSetting!.mainTextHeightWithHtmlZoom + this.gridSetting!.firstSubTextHeightWithHtmlZoom,
-            this.gridSetting!.cellWidthWithHtmlZoom,
+            (this.gridSetting!.cellWidthWithHtmlZoom * colSpan),
             this.gridSetting!.secondSubTextHeightWithHtmlZoom,
             this.gridSetting!.subFontWithHtmlZoom,
             this.gridSetting!.secondSubFontSizeHtmlZoom,

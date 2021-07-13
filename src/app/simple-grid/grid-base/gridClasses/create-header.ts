@@ -24,13 +24,13 @@ export class CreateHeader {
   
       const tempCanvas = document.createElement('canvas');
       const ctx: CanvasRenderingContext2D |null|undefined = tempCanvas.getContext('2d');
-      tempCanvas.width = this.gridSetting!.cellWidth;
-      tempCanvas.height = this.gridSetting!.cellHeaderHeight ;
+      tempCanvas.width = this.gridSetting!.cellWidthWithHtmlZoom;
+      tempCanvas.height = this.gridSetting!.cellHeaderHeightWithHtmlZoom;
   
-      ctx!.fillStyle = this.gridSetting!.headerBackGroundColor;
+      ctx!.fillStyle = this.gridSetting!.controlBackGroundColor;
       ctx!.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
       // tslint:disable-next-line:max-line-length
-      MDraw.drawBorder(ctx!, 0, 0, tempCanvas.width , tempCanvas.height , this.gridSetting!.headerBackGroundColor, 1, Gradient3DBorderStyleEnum.Raised);
+      
   
       this.emptyHeader = ctx!.getImageData(0, 0,  tempCanvas.width, tempCanvas.height );
     }
@@ -39,7 +39,7 @@ export class CreateHeader {
       this.emptyHeader = undefined;
     }
   
-    createHeader(col: number) {
+    createHeader(col: number): HTMLCanvasElement {
   
       if (this.emptyHeader === undefined) {
         this.init();
@@ -48,15 +48,17 @@ export class CreateHeader {
       const tempCanvas: HTMLCanvasElement = document.createElement('canvas') as HTMLCanvasElement;
       const ctx = tempCanvas.getContext('2d');
   
-      tempCanvas.width = this.gridSetting!.cellWidth;
-      tempCanvas.height = this.gridSetting!.cellHeaderHeight;
+      tempCanvas.width = this.gridSetting!.cellWidthWithHtmlZoom;
+      tempCanvas.height = this.gridSetting!.cellHeaderHeightWithHtmlZoom;
   
       ctx!.putImageData(this.emptyHeader!, 0, 0);
   
       const headerCell = this.gridData?.getHeaderItem(col);
       this.drawText(ctx!,  headerCell!.titel);
+
+      MDraw.drawBorder(ctx!, 0, 0, tempCanvas.width , tempCanvas.height , this.gridSetting!.controlBackGroundColor, 2, Gradient3DBorderStyleEnum.Raised);
   
-      return  ctx!.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+      return  tempCanvas;
   
   
     }

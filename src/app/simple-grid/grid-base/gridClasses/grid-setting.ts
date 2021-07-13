@@ -57,7 +57,7 @@ export class GridSetting {
   subFontColor = '#404040';
 
   foreGroundColor = '#000000';
-  // controlBackGroundColor: string = '#D8BFD8';
+  controlBackGroundColor: string = '#F4F6F6';
   // headerBackGroundColor = '#f2f2f2';
   headerBackGroundColor = '#FFFFFF';
   headerForeGroundColor = '#4d4d4d';
@@ -105,8 +105,8 @@ export class GridSetting {
     this.firstSubTextHeightWithHtmlZoom = this._firstSubTextHeight * this.htmlZoom;
     this.secondSubTextHeightWithHtmlZoom = this._firstSubTextHeight * this.htmlZoom;
     this.cellHeaderHeightWithHtmlZoom = 30 * this.htmlZoom;
-    this.mainFontSizeHtmlZoom = this.mainFontSize * this.htmlZoom ;
-    this.firstSubFontSizeHtmlZoom = this.firstSubFontSize * this.htmlZoom ;
+    this.mainFontSizeHtmlZoom = this.mainFontSize * this.htmlZoom;
+    this.firstSubFontSizeHtmlZoom = this.firstSubFontSize * this.htmlZoom;
     this.fontWithHtmlZoom = 'normal ' + this.mainFontSize * this.htmlZoom + 'px Arial';
     this.subFontWithHtmlZoom = 'normal ' + this.firstSubFontSize * this.htmlZoom + 'px Arial'
     this.subFontsizeithHtmlZoom = Math.round((this._firstSubTextHeight * this.htmlZoom) * 10) / 10;

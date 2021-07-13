@@ -21,8 +21,7 @@ import { VScrollbarComponent } from '../v-scrollbar/v-scrollbar.component';
 })
 export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  // public gridData: GridData | undefined | null = new GridData();
-  //  public gridSetting: GridSetting | undefined | null = new GridSetting();
+
   private cellManipulation: GridCellManipulation | undefined | null;
   private gridCellContextMenu: GridCellContextMenu | undefined | null;
   private createCell: CreateCell | undefined | null;
@@ -144,6 +143,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private resize = (event: any): void => {
+
     this.setMetrics();
     this.refreshGrid();
   }
@@ -151,6 +151,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   private visibilityChange = (event: any): void => {
 
   }
+
   changeZoom(value: number) {
 
     this.gridSetting!.zoom = Math.round(value * 10) / 10;
@@ -208,10 +209,14 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
       col = 0;
     }
 
+    let cols = this.gridData?.columns as number;
+    if (!cols) { cols = 1; }
+    const width = this.gridData?.columns as number * this.gridSetting!.cellWidth;
+
     this.ctx!.drawImage(
       this.headerCanvas!,
       col * -1 * this.gridSetting!.cellWidth,
-      0
+      0,
     );
 
     if (
@@ -226,6 +231,8 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private setMetrics() {
+    this.gridSetting?.reset();
+
     const visibleRows: number =
       Math.floor(this.canvas!.clientHeight / this.gridSetting!.cellHeight) - 1;
     const visibleCols: number =
@@ -507,18 +514,24 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   drawHeader() {
 
     const width: number = this.gridData!.columns * this.gridSetting!.cellWidth;
-    this.headerCanvas!.height =
-      this.gridSetting!.cellHeaderHeight + this.gridSetting!.increaseBorder;
+    this.headerCanvas!.height =  this.gridSetting!.cellHeaderHeight + this.gridSetting!.increaseBorder;
     this.headerCanvas!.width = width;
+
+    const sourceWidth = this.gridSetting!.cellWidthWithHtmlZoom;
+    const sourceHeight = this.gridSetting!.cellHeaderHeightWithHtmlZoom;
+    const destinationWidth = this.gridSetting!.cellWidth;
+    const destinationHeight = this.gridSetting!.cellHeaderHeight;
 
     for (let col = 0; col < this.gridData!.columns; col++) {
       const imgHeader = this.createHeader!.createHeader(col);
       if (imgHeader) {
         if (col < this.gridData!.columns) {
-          this.headerCtx!.putImageData(
+          this.headerCtx!.drawImage(
             imgHeader,
+            0,0,sourceWidth,sourceHeight,
             col * this.gridSetting!.cellWidth,
-            0
+            0,destinationWidth,destinationHeight
+
           );
         }
       }
@@ -651,21 +664,22 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     const cellHeightWithHtmlZoom = this.gridSetting!.cellHeightWithHtmlZoom;
 
     if (tmpRow < this.gridData!.rows && tmpCol < this.gridData!.columns) {
-      const img = this.createCell!.createCell(tmpRow, tmpCol);
-      if (img) {
-        this.renderCanvasCtx!.drawImage(
-          img,
-          0,
-          0,
-          cellWidthWithHtmlZoom,
-          cellHeightWithHtmlZoom,
-          col * cellWidth,
-          row * cellHeight,
-          cellWidth,
-          cellHeight
 
-        );
-      }
+      const result = this.createCell!.createCell(tmpRow, tmpCol);
+
+      this.renderCanvasCtx!.drawImage(
+        result[0],
+        0,
+        0,
+        cellWidthWithHtmlZoom,
+        cellHeightWithHtmlZoom,
+        col * cellWidth,
+        row * cellHeight,
+        cellWidth,
+        cellHeight
+
+      );
+
     }
   }
 
