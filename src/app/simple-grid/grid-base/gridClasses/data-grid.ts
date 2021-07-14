@@ -2,7 +2,7 @@ import { WeekDay } from "@angular/common";
 import { WeekDaysEnum } from "../../helpers/enums/grid-settings.enum";
 import { GridCell, HeaderCell, IGridCell, IHeaderCell } from "./grid-cell";
 import { GridSetting } from "./grid-setting";
-import { MergeCellCollection } from "./merge-cell";
+import { IMergeCell, MergeCellCollection } from "./merge-cell";
 
 export class GridData {
 
@@ -67,18 +67,15 @@ export class GridData {
 
 
   getItem(row: number, col: number): GridCell {
-    const c = new GridCell();
-    //Text
-    this.setCellText(c,row,col);
-   
-    //Textformatierung
-    // (this.gridSetting!.mainTextHeightWithHtmlZoom * rowSpan),
+    const gridCell = new GridCell();
+    gridCell.currentMergeCell = this.mergeCellCollection!.itemByColRow(row, col);
 
-      // Hintergrundsfarbe
-      c.backgroundColor = this.setEmptyBackground(this.getWeekday(col));
+    this.setCellText(gridCell, row, col);
+    this.fomatSpace(gridCell, row, col);
+    gridCell.backgroundColor = this.setEmptyBackground(this.getWeekday(col));
 
 
-    return c;
+    return gridCell;
   }
 
   getHeaderItem(col: number): HeaderCell {
@@ -129,7 +126,7 @@ export class GridData {
     } else { return WeekDaysEnum.Workday; }
   }
 
-  weekdayName(column: number):string {
+  weekdayName(column: number): string {
 
 
     const today: Date = new Date(this.startDate);
@@ -138,18 +135,34 @@ export class GridData {
     return this.weekday[today.getDay()];
   }
 
-  private formatDate(date: Date):string  {
+  private formatDate(date: Date): string {
 
     const day = date.getDate();
     return this.weekday[date.getDay()] + ' ' + day + '. ' + this.monthsName[date.getMonth()] + '.';
   }
 
-  private fomatSpace(cell:GridCell,row: number, col: number):void {
+  private fomatSpace(gridCell: GridCell, row: number, col: number): void {
 
+    let colSpan = 1;
+        let rowSpan = 1;
+
+        if (gridCell.currentMergeCell) {
+            colSpan = gridCell.currentMergeCell.colSpan;
+            rowSpan = gridCell.currentMergeCell.rowSpan;
+        }
+
+    gridCell.mainTextWidth = (this.gridSetting!.cellWidthWithHtmlZoom * colSpan) - (this.gridSetting!.cellPadding * 2);
+    gridCell.mainTextHeight =(this.gridSetting!.mainTextHeightWithHtmlZoom * rowSpan);
+
+    gridCell.firstSubTextWidth = gridCell.mainTextWidth;
+    gridCell.firstSubTextHeight =this.gridSetting!.firstSubTextHeightWithHtmlZoom;
+
+    gridCell.secondSubTextWidth = gridCell.mainTextWidth;
+    gridCell.secondSubTextHeight =this.gridSetting!.secondSubTextHeightWithHtmlZoom;
   }
 
-  private setCellText(cell:GridCell,row: number, col: number):void {
-    cell.mainText = 'Zelle ' + row.toString() + ' / ' + col.toString();
-    cell.secondSubText = row.toString() + ' / ' + col.toString();
+  private setCellText(gridCell: GridCell, row: number, col: number): void {
+    gridCell.mainText = 'Zelle ' + row.toString() + ' / ' + col.toString();
+    gridCell.secondSubText = row.toString() + ' / ' + col.toString();
   }
 }

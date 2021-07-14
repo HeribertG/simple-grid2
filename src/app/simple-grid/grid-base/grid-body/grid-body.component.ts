@@ -22,7 +22,7 @@ import { VScrollbarComponent } from '../v-scrollbar/v-scrollbar.component';
 export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
-  private cellManipulation: GridCellManipulation | undefined | null;
+  cellManipulation: GridCellManipulation | undefined | null;
   private gridCellContextMenu: GridCellContextMenu | undefined | null;
   private createCell: CreateCell | undefined | null;
   private createHeader: CreateHeader | undefined | null;
@@ -223,7 +223,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     );
 
     if (
-      this.haspositionCollection &&
+      this.hasPositionCollection &&
       this.cellManipulation!.positionCollection.count() > 1
     ) {
       this.drawSelection();
@@ -879,7 +879,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     this.renderGrid();
   }
 
-  get haspositionCollection(): boolean {
+  public get hasPositionCollection(): boolean {
     return this.cellManipulation!.positionCollection.count() > 0;
   }
 

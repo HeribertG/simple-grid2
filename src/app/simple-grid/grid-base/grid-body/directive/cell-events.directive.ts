@@ -1,17 +1,17 @@
 import {
   Directive,
   HostListener,
-  Inject,
   ViewContainerRef,
   NgZone,
+  Inject,
   } from '@angular/core';
 
 
 import { Position } from '../../gridClasses/position';
-import { GridBodyComponent } from '../grid-body.component';
 import { ScrollGridService } from '../../services/scroll-grid.service';
-import { GridSettingsService } from '../../services/grid-settings.service';
-import { GridCellManipulationService } from '../../services/grid-cell-manipulation.service';
+import { GridBodyComponent } from '../grid-body.component';
+
+
 
 
 @Directive({
@@ -29,16 +29,14 @@ export class CellEventsDirective {
     private zone: NgZone,
     private gridBody: GridBodyComponent,
     public viewContainerRef: ViewContainerRef,
-    @Inject(ScrollGridService) private scrollGrid: ScrollGridService,
-    @Inject(GridSettingsService) private gridSetting: GridSettingsService,
-    @Inject(GridCellManipulationService)
-    private cellManipulation: GridCellManipulationService
+    @Inject(ScrollGridService) private scrollGrid: ScrollGridService
   ) {}
 
   @HostListener('mouseenter', ['$event']) onMouseEnter(event: MouseEvent) {}
 
   @HostListener('mouseleave', ['$event']) onMouseLeave(event: MouseEvent) {
     this.gridBody.destroyToolTip();
+    
   }
 
   @HostListener('mousewheel', ['$event']) onMouseWheel(
@@ -90,8 +88,8 @@ export class CellEventsDirective {
     if (event.buttons === 0) {
       const col: number = this.gridBody.calcCorrectCoordinate(event).column;
 
-      // if (col < this.gridData.columns && col >= 0) {
-      //   const holiday: holidayDate = this.gridData.holidayInfo(col);
+      // if (col < this.gridBody..gridBody.gridBody.gridData!.columns && col >= 0) {
+      //   const holiday: holidayDate = this.gridBody..gridBody.gridBody.gridData!.holidayInfo(col);
       //   if (holiday !== undefined) {
       //     const holidayName: string = holiday.currentName;
       //     this.gridBody.showToolTip({ value: holidayName, event });
@@ -118,7 +116,7 @@ export class CellEventsDirective {
         }
       }
 
-      if (this.gridBody.position.row < this.gridData.rows) {
+      if (this.gridBody.position.row < this.gridBody.gridData!.rows) {
         this.gridBody.position = new Position(
           this.gridBody.position.row + 1,
           this.gridBody.position.column
@@ -150,8 +148,8 @@ export class CellEventsDirective {
       let nextVisibleRow: number =
         this.scrollGrid.vScrollValue + this.scrollGrid.visibleRows - 1;
 
-      if (nextVisibleRow > this.gridData.rows) {
-        nextVisibleRow = this.gridData.rows - 1;
+      if (nextVisibleRow > this.gridBody.gridData!.rows) {
+        nextVisibleRow = this.gridBody.gridData!.rows - 1;
       }
 
       if (this.scrollGrid.maxRows <= 1) {
@@ -251,7 +249,7 @@ export class CellEventsDirective {
       }
 
       this.gridBody.position = new Position(
-        this.gridData.rows - 1,
+        this.gridBody.gridData!.rows - 1,
         this.gridBody.position.column
       );
 
@@ -313,7 +311,7 @@ export class CellEventsDirective {
         }
       }
 
-      if (this.gridBody.position.column < this.gridData.columns - 1) {
+      if (this.gridBody.position.column < this.gridBody.gridData!.columns - 1) {
         const nextColumn: number = this.gridBody.position.column + 1;
 
         this.gridBody.position = new Position(
@@ -352,7 +350,7 @@ export class CellEventsDirective {
     // }
     // Copy
     if (event.key === 'c' && event.ctrlKey) {
-      this.cellManipulation.copy();
+      this.gridBody.cellManipulation!.copy();
       this.keyDown = false;
 
       return;

@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { HScrollbarComponent } from './grid-base/h-scrollbar/h-scrollbar.component';
 import { GridBodyComponent } from './grid-base/grid-body/grid-body.component';
 import { VScrollbarComponent } from './grid-base/v-scrollbar/v-scrollbar.component';
+import { CellEventsDirective } from './grid-base/grid-body/directive/cell-events.directive';
 
 
 
@@ -13,11 +14,13 @@ import { VScrollbarComponent } from './grid-base/v-scrollbar/v-scrollbar.compone
     GridContainerComponent,
     HScrollbarComponent,
     VScrollbarComponent,
-    GridBodyComponent
+    GridBodyComponent,
+    CellEventsDirective,
   ],
   imports: [
     CommonModule,
     FormsModule,
+    
     
     
   ],
@@ -25,7 +28,8 @@ import { VScrollbarComponent } from './grid-base/v-scrollbar/v-scrollbar.compone
     GridContainerComponent,
     HScrollbarComponent,
     VScrollbarComponent,
-    GridBodyComponent
+    GridBodyComponent,
+    CellEventsDirective,
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'de-CH' },

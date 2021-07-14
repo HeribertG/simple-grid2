@@ -1,5 +1,6 @@
 
 import { BaselineAlignmentEnum, CellTypeEnum, TextAlignmentEnum } from "../../helpers/enums/cell-settings.enum";
+import { IMergeCell } from "./merge-cell";
 
 
 export interface IGridCell {
@@ -26,6 +27,10 @@ export interface IGridCell {
   firstSubTextHeight: number;
   secondSubTextHeight: number;
 
+  mainTextWidth: number;
+  firstSubTextWidth: number;
+  secondSubTextWidth: number;
+
 }
 
 
@@ -40,6 +45,8 @@ export class GridCell implements IGridCell {
   sealed = false;
   cellType = CellTypeEnum.Standard;
 
+  currentMergeCell: IMergeCell | undefined
+
   mainTextAlignment = TextAlignmentEnum.Center;
   mainTextBaselineAlignment = BaselineAlignmentEnum.Top;
 
@@ -52,6 +59,10 @@ export class GridCell implements IGridCell {
   mainTextHeight = 0;
   firstSubTextHeight = 0;
   secondSubTextHeight = 0;
+
+  mainTextWidth = 0;
+  firstSubTextWidth = 0;
+  secondSubTextWidth = 0;
 
   isEmpty(): boolean {
 

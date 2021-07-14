@@ -1,11 +1,11 @@
 import { MDraw } from "../../helpers/draw-helper";
 import { GridData } from "./data-grid";
 import { GridCell, GridCellResult } from "./grid-cell";
-import { IMergeCell } from "./merge-cell";
+
 
 export class CreateCell {
 
-  
+
     private gridData: GridData | undefined | null;
 
     constructor(gridData: GridData) {
@@ -16,7 +16,6 @@ export class CreateCell {
         this.gridData?.destroy();
         this.gridData = null;
     }
-
 
     private createEmptyCanvas(
         backGroundColor: string,
@@ -71,26 +70,23 @@ export class CreateCell {
     }
 
     createCell(row: number, col: number): [canvas: HTMLCanvasElement, gridCellResult: GridCellResult | undefined] {
+        
         const gridCell = this.gridData!.getItem(row, col);
+        const gridCellResult = this.createGridCellResult(row, col, gridCell);
 
-        const gridCellResult = new GridCellResult();
-        const mergeCell = this.gridData!.mergeCellCollection!.itemByColRow(row, col);
-
-        this.setGridCellResult(row, col, gridCellResult, mergeCell);
-
-
-        const cellCanvas = this.createCanvas(gridCell, mergeCell);
+        const cellCanvas = this.createCanvas(gridCell);
         const ctx = cellCanvas.getContext('2d');
 
         if (!gridCell.isEmpty()) {
 
-            this.drawMainText(ctx!, gridCell, mergeCell);
+            this.drawMainText(ctx!, gridCell);
+
             if (gridCell.hasSubText()) {
                 if (gridCell.firstSubText) {
-                    this.drawFirstSubText(ctx!, gridCell, mergeCell);
+                    this.drawFirstSubText(ctx!, gridCell);
                 }
                 if (gridCell.secondSubText) {
-                    this.drawSecondSubText(ctx!, gridCell, mergeCell);
+                    this.drawSecondSubText(ctx!, gridCell);
                 }
             }
 
@@ -101,29 +97,33 @@ export class CreateCell {
 
     }
 
-    private setGridCellResult(row: number, col: number, gridCellResult: GridCellResult, mergeCell: IMergeCell | undefined): void {
+    private createGridCellResult(row: number, col: number, gridCell: GridCell): GridCellResult {
+        const gridCellResult = new GridCellResult();
+
         gridCellResult.originalRow = row;
         gridCellResult.originalCol = col;
         gridCellResult.rowSpan = 1;
         gridCellResult.colSpan = 1;
 
-        if (mergeCell) {
-            gridCellResult.originalRow = mergeCell.position.row;
-            gridCellResult.originalCol = mergeCell.position.column;
-            gridCellResult.rowSpan = mergeCell.rowSpan;
-            gridCellResult.colSpan = mergeCell.colSpan;
+        if (gridCell.currentMergeCell) {
+            gridCellResult.originalRow = gridCell.currentMergeCell.position.row;
+            gridCellResult.originalCol = gridCell.currentMergeCell.position.column;
+            gridCellResult.rowSpan = gridCell.currentMergeCell.rowSpan;
+            gridCellResult.colSpan = gridCell.currentMergeCell.colSpan;
         }
+
+        return gridCellResult;
     }
 
-    private createCanvas(gridCell: GridCell, mergeCell: IMergeCell | undefined): HTMLCanvasElement {
+    private createCanvas(gridCell: GridCell): HTMLCanvasElement {
 
 
         let colSpan = 1;
         let rowSpan = 1;
 
-        if (mergeCell) {
-            colSpan = mergeCell.colSpan;
-            rowSpan = mergeCell.rowSpan;
+        if (gridCell.currentMergeCell) {
+            colSpan = gridCell.currentMergeCell.colSpan;
+            rowSpan = gridCell.currentMergeCell.rowSpan;
         }
 
 
@@ -161,13 +161,13 @@ export class CreateCell {
         ctx.stroke();
     }
 
-    private drawMainText(ctx: CanvasRenderingContext2D, gridCell: GridCell, mergeCell: IMergeCell | undefined) {
+    private drawMainText(ctx: CanvasRenderingContext2D, gridCell: GridCell) {
         let colSpan = 1;
         let rowSpan = 1;
 
-        if (mergeCell) {
-            colSpan = mergeCell.colSpan;
-            rowSpan = mergeCell.rowSpan;
+        if (gridCell.currentMergeCell) {
+            colSpan = gridCell.currentMergeCell.colSpan;
+            rowSpan = gridCell.currentMergeCell.rowSpan;
         }
 
         MDraw.drawText(
@@ -175,8 +175,8 @@ export class CreateCell {
             gridCell.mainText,
             this.gridData!.gridSetting!.cellPadding,
             this.gridData!.gridSetting!.cellPadding,
-            (this.gridData!.gridSetting!.cellWidthWithHtmlZoom * colSpan) - (this.gridData!.gridSetting!.cellPadding * 2),
-            (this.gridData!.gridSetting!.mainTextHeightWithHtmlZoom * rowSpan),
+            gridCell.mainTextWidth,
+            gridCell.mainTextHeight,
             this.gridData!.gridSetting!.fontWithHtmlZoom,
             this.gridData!.gridSetting!.mainFontSizeHtmlZoom,
             this.gridData!.gridSetting!.mainFontColor,
@@ -185,13 +185,13 @@ export class CreateCell {
         );
     }
 
-    private drawFirstSubText(ctx: CanvasRenderingContext2D, gridCell: GridCell, mergeCell: IMergeCell | undefined) {
+    private drawFirstSubText(ctx: CanvasRenderingContext2D, gridCell: GridCell) {
         let colSpan = 1;
         let rowSpan = 1;
 
-        if (mergeCell) {
-            colSpan = mergeCell.colSpan;
-            rowSpan = mergeCell.rowSpan;
+        if (gridCell.currentMergeCell) {
+            colSpan = gridCell.currentMergeCell.colSpan;
+            rowSpan = gridCell.currentMergeCell.rowSpan;
         }
 
 
@@ -199,9 +199,9 @@ export class CreateCell {
             ctx,
             gridCell.firstSubText,
             this.gridData!.gridSetting!.cellPadding,
-            this.gridData!.gridSetting!.mainTextHeightWithHtmlZoom,
-            (this.gridData!.gridSetting!.cellWidthWithHtmlZoom * colSpan) - (this.gridData!.gridSetting!.cellPadding * 2),
-            this.gridData!.gridSetting!.firstSubTextHeightWithHtmlZoom,
+            gridCell.mainTextHeight,
+            gridCell.firstSubTextWidth,
+            gridCell.firstSubTextHeight,
             this.gridData!.gridSetting!.subFontWithHtmlZoom,
             this.gridData!.gridSetting!.firstSubFontSizeHtmlZoom,
             this.gridData!.gridSetting!.subFontColor,
@@ -210,23 +210,23 @@ export class CreateCell {
         );
     }
 
-    private drawSecondSubText(ctx: CanvasRenderingContext2D, gridCell: GridCell, mergeCell: IMergeCell | undefined) {
+    private drawSecondSubText(ctx: CanvasRenderingContext2D, gridCell: GridCell) {
 
         let colSpan = 1;
         let rowSpan = 1;
 
-        if (mergeCell) {
-            colSpan = mergeCell.colSpan;
-            rowSpan = mergeCell.rowSpan;
+        if (gridCell.currentMergeCell) {
+            colSpan = gridCell.currentMergeCell.colSpan;
+            rowSpan = gridCell.currentMergeCell.rowSpan;
         }
 
         MDraw.drawText(
             ctx,
             gridCell.secondSubText,
             this.gridData!.gridSetting!.cellPadding,
-            this.gridData!.gridSetting!.mainTextHeightWithHtmlZoom + this.gridData!.gridSetting!.firstSubTextHeightWithHtmlZoom,
-            (this.gridData!.gridSetting!.cellWidthWithHtmlZoom * colSpan)- (this.gridData!.gridSetting!.cellPadding * 2),
-            this.gridData!.gridSetting!.secondSubTextHeightWithHtmlZoom,
+            gridCell.mainTextHeight+gridCell.firstSubTextHeight,
+            gridCell.secondSubTextWidth,
+            gridCell.secondSubTextHeight,
             this.gridData!.gridSetting!.subFontWithHtmlZoom,
             this.gridData!.gridSetting!.secondSubFontSizeHtmlZoom,
             this.gridData!.gridSetting!.subFontColor,
