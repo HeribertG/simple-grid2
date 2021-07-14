@@ -13,6 +13,8 @@ export class GridSetting {
   private _mainTextHeight = 23;
   mainFontSize = 12;
 
+  cellPadding = 3;
+
   // tslint:disable-next-line:variable-name
   private _firstSubTextHeight = 12;
   firstSubFontSize = 10;

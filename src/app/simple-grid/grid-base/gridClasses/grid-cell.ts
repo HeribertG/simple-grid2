@@ -1,5 +1,5 @@
 
-import { CellTypeEnum, TextAlignmentEnum } from "../../helpers/enums/cell-settings.enum";
+import { BaselineAlignmentEnum, CellTypeEnum, TextAlignmentEnum } from "../../helpers/enums/cell-settings.enum";
 
 
 export interface IGridCell {
@@ -12,8 +12,20 @@ export interface IGridCell {
   confirmed: boolean;
   sealed: boolean;
   cellType: CellTypeEnum;
+
   mainTextAlignment: TextAlignmentEnum;
-  subTextAlignment: TextAlignmentEnum;
+  mainTextBaselineAlignment: BaselineAlignmentEnum;
+
+  firstSubTextAlignment: TextAlignmentEnum;
+  firstSubTextBaselineAlignment: BaselineAlignmentEnum;
+
+  secondSubTextAlignment: TextAlignmentEnum;
+  secondSubTextBaselineAlignment: BaselineAlignmentEnum;
+
+  mainTextHeight: number;
+  firstSubTextHeight: number;
+  secondSubTextHeight: number;
+
 }
 
 
@@ -27,8 +39,19 @@ export class GridCell implements IGridCell {
   confirmed = false;
   sealed = false;
   cellType = CellTypeEnum.Standard;
+
   mainTextAlignment = TextAlignmentEnum.Center;
-  subTextAlignment = TextAlignmentEnum.Center;
+  mainTextBaselineAlignment = BaselineAlignmentEnum.Top;
+
+  firstSubTextAlignment = TextAlignmentEnum.Center;
+  firstSubTextBaselineAlignment = BaselineAlignmentEnum.Top;
+
+  secondSubTextAlignment = TextAlignmentEnum.Center;
+  secondSubTextBaselineAlignment = BaselineAlignmentEnum.Top;
+
+  mainTextHeight = 0;
+  firstSubTextHeight = 0;
+  secondSubTextHeight = 0;
 
   isEmpty(): boolean {
 
@@ -46,25 +69,13 @@ export interface IGridCellResult {
   rowSpan: number;
   originalCol: number;
   originalRow: number;
-  // cellHeightWithHtmlZoom: number;
-  // cellWidthWithHtmlZoom: number;
-  // mainTextHeightWithHtmlZoom: number;
-  // firstSubTextHeightWithHtmlZoom: number;
-  // secondSubTextHeightWithHtmlZoom: number;
-
 }
 
 export class GridCellResult implements IGridCellResult {
-  colSpan = -1;
-  rowSpan = -1;
+  colSpan = 1;
+  rowSpan = 1;
   originalCol = -1;
   originalRow = -1;
-  // cellHeightWithHtmlZoom = 0;
-  // cellWidthWithHtmlZoom = 0;
-  // mainTextHeightWithHtmlZoom = 0;
-  // firstSubTextHeightWithHtmlZoom = 0;
-  // secondSubTextHeightWithHtmlZoom = 0;
-
 }
 export interface IHeaderCell {
 

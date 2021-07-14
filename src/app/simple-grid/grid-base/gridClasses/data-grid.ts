@@ -1,13 +1,15 @@
 import { WeekDay } from "@angular/common";
 import { WeekDaysEnum } from "../../helpers/enums/grid-settings.enum";
-import { GridCell, HeaderCell } from "./grid-cell";
+import { GridCell, HeaderCell, IGridCell, IHeaderCell } from "./grid-cell";
+import { GridSetting } from "./grid-setting";
 import { MergeCellCollection } from "./merge-cell";
 
 export class GridData {
 
   weekday = new Array(7);
   monthsName = new Array(12);
-  mergeCellCollection:MergeCellCollection = new MergeCellCollection();;
+  mergeCellCollection: MergeCellCollection | undefined = new MergeCellCollection();
+  gridSetting: GridSetting | undefined | null
 
   startDate: Date;
 
@@ -20,7 +22,8 @@ export class GridData {
   backGroundColorHolyday = '#e6ffe6';
   backGroundColorOfficiallyHolyday = '#ffffe6';
 
-  constructor() {
+  constructor(gridSetting: GridSetting) {
+    this.gridSetting = gridSetting;
 
     const tmpDate = new Date(Date.now());
     const d = new Date(tmpDate.getFullYear(), tmpDate.getMonth(), 1);
@@ -49,7 +52,12 @@ export class GridData {
 
   }
 
-
+  destroy(): void {
+    this.monthsName = [];
+    this.weekday = [];
+    this.mergeCellCollection?.clear();
+    this.mergeCellCollection = undefined;
+  }
 
 
 
@@ -60,11 +68,14 @@ export class GridData {
 
   getItem(row: number, col: number): GridCell {
     const c = new GridCell();
+    //Text
+    this.setCellText(c,row,col);
+   
+    //Textformatierung
+    // (this.gridSetting!.mainTextHeightWithHtmlZoom * rowSpan),
 
-    c.mainText = 'Zelle ' + row.toString() + ' / ' + col.toString();
-    c.secondSubText = row.toString() + ' / ' + col.toString();
-
-    c.backgroundColor = this.setEmptyBackground(this.getWeekday(col));
+      // Hintergrundsfarbe
+      c.backgroundColor = this.setEmptyBackground(this.getWeekday(col));
 
 
     return c;
@@ -100,7 +111,7 @@ export class GridData {
     return this.backGroundColor;
   }
 
-  getWeekday(column: number): WeekDaysEnum {
+  private getWeekday(column: number): WeekDaysEnum {
     const today: Date = new Date(this.startDate);
     today.setDate(today.getDate() + column);
 
@@ -118,7 +129,7 @@ export class GridData {
     } else { return WeekDaysEnum.Workday; }
   }
 
-  weekdayName(column: number) {
+  weekdayName(column: number):string {
 
 
     const today: Date = new Date(this.startDate);
@@ -127,9 +138,18 @@ export class GridData {
     return this.weekday[today.getDay()];
   }
 
-  private formatDate(date: Date) {
+  private formatDate(date: Date):string  {
 
     const day = date.getDate();
     return this.weekday[date.getDay()] + ' ' + day + '. ' + this.monthsName[date.getMonth()] + '.';
+  }
+
+  private fomatSpace(cell:GridCell,row: number, col: number):void {
+
+  }
+
+  private setCellText(cell:GridCell,row: number, col: number):void {
+    cell.mainText = 'Zelle ' + row.toString() + ' / ' + col.toString();
+    cell.secondSubText = row.toString() + ' / ' + col.toString();
   }
 }

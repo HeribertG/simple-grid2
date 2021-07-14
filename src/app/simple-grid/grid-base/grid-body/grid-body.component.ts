@@ -7,8 +7,7 @@ import { CreateHeader } from '../gridClasses/create-header';
 import { GridData } from '../gridClasses/data-grid';
 import { GridCellContextMenu } from '../gridClasses/grid-cell-context-menu';
 import { GridCellManipulation } from '../gridClasses/grid-cell-manipulation';
-import { GridSetting } from '../gridClasses/grid-setting';
-import { MergeCellCollection } from '../gridClasses/merge-cell';
+
 import { Position } from '../gridClasses/position';
 import { HScrollbarComponent } from '../h-scrollbar/h-scrollbar.component';
 import { ScrollGridService } from '../services/scroll-grid.service';
@@ -48,7 +47,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   contextMenuPosition = { x: '0px', y: '0px' };
 
   @Input() gridData: GridData | undefined | null;
-  @Input() gridSetting: GridSetting | undefined | null
+
 
   @Input() vScrollbar: VScrollbarComponent | undefined | null;
   @Input() hScrollbar: HScrollbarComponent | undefined | null;
@@ -102,10 +101,10 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.cellManipulation = new GridCellManipulation(this.gridSetting!);
+    this.cellManipulation = new GridCellManipulation(this.gridData!.gridSetting!);
     this.gridCellContextMenu = new GridCellContextMenu(this.gridData!);
-    this.createCell = new CreateCell(this.gridSetting!, this.gridData!);
-    this.createHeader = new CreateHeader(this.gridSetting!, this.gridData!);
+    this.createCell = new CreateCell( this.gridData!);
+    this.createHeader = new CreateHeader( this.gridData!);
     this.init();
 
   }
@@ -121,8 +120,10 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cellManipulation = null;
     this.createCell!.destroy();
     this.createCell = null;
+    this.createHeader!.destroy();
+    this.createHeader = null;
 
-    this.gridData?.mergeCellCollection.clear();
+    this.gridData?.mergeCellCollection!.clear();
     this.gridData = null;
     this.ctx = null;
     this.canvas = null;
@@ -156,7 +157,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
   changeZoom(value: number) {
 
-    this.gridSetting!.zoom = Math.round(value * 10) / 10;
+    this.gridData!.gridSetting!.zoom = Math.round(value * 10) / 10;
 
     this.setMetrics();
     this.vScrollbar!.init();
@@ -187,13 +188,13 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
     const visibleRow: number = Math.ceil(
-      this.canvas!.clientHeight / this.gridSetting!.cellHeight
+      this.canvas!.clientHeight / this.gridData!.gridSetting!.cellHeight
     );
     const visibleCol: number = Math.ceil(
-      this.canvas!.clientWidth / this.gridSetting!.cellWidth
+      this.canvas!.clientWidth / this.gridData!.gridSetting!.cellWidth
     );
-    const height = visibleRow * this.gridSetting!.cellHeight;
-    const width = visibleCol * this.gridSetting!.cellWidth;
+    const height = visibleRow * this.gridData!.gridSetting!.cellHeight;
+    const width = visibleCol * this.gridData!.gridSetting!.cellWidth;
 
     if (this.renderCanvas!.width < width || this.renderCanvas!.height < height) {
       this.onGrowGrid();
@@ -204,7 +205,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private renderGrid(): void {
     this.ctx!.drawImage(this.renderCanvas!, 0, 0, this.renderCanvas!.width, this.renderCanvas!.height,
-      0, this.gridSetting!.cellHeaderHeight, this.renderCanvas!.width, this.renderCanvas!.height);
+      0, this.gridData!.gridSetting!.cellHeaderHeight, this.renderCanvas!.width, this.renderCanvas!.height);
 
     let col: number = this.scrollGrid.hScrollValue;
     if (col < 0) {
@@ -213,11 +214,11 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
     let cols = this.gridData?.columns as number;
     if (!cols) { cols = 1; }
-    const width = this.gridData?.columns as number * this.gridSetting!.cellWidth;
+    const width = this.gridData?.columns as number * this.gridData!.gridSetting!.cellWidth;
 
     this.ctx!.drawImage(
       this.headerCanvas!,
-      col * -1 * this.gridSetting!.cellWidth,
+      col * -1 * this.gridData!.gridSetting!.cellWidth,
       0,
     );
 
@@ -233,12 +234,12 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private setMetrics() {
-    this.gridSetting?.reset();
+    this.gridData!.gridSetting?.reset();
 
     const visibleRows: number =
-      Math.floor(this.canvas!.clientHeight / this.gridSetting!.cellHeight) - 1;
+      Math.floor(this.canvas!.clientHeight / this.gridData!.gridSetting!.cellHeight) - 1;
     const visibleCols: number =
-      Math.floor(this.canvas!.clientWidth / this.gridSetting!.cellWidth) - 1;
+      Math.floor(this.canvas!.clientWidth / this.gridData!.gridSetting!.cellWidth) - 1;
     this.scrollGrid.setMetrics(
       visibleCols,
       this.gridData!.columns,
@@ -249,20 +250,20 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onGrowGrid() {
     const oldVisibleRow: number = Math.ceil(
-      this.renderCanvas!.clientHeight / this.gridSetting!.cellHeight
+      this.renderCanvas!.clientHeight / this.gridData!.gridSetting!.cellHeight
     );
     const oldVisibleCol: number = Math.ceil(
-      this.renderCanvas!.clientWidth / this.gridSetting!.cellWidth
+      this.renderCanvas!.clientWidth / this.gridData!.gridSetting!.cellWidth
     );
 
     const visibleRow: number = Math.ceil(
-      this.canvas!.clientHeight / this.gridSetting!.cellHeight
+      this.canvas!.clientHeight / this.gridData!.gridSetting!.cellHeight
     );
     const visibleCol: number = Math.ceil(
-      this.canvas!.clientWidth / this.gridSetting!.cellWidth
+      this.canvas!.clientWidth / this.gridData!.gridSetting!.cellWidth
     );
-    const height = visibleRow * this.gridSetting!.cellHeight;
-    const width = visibleCol * this.gridSetting!.cellWidth;
+    const height = visibleRow * this.gridData!.gridSetting!.cellHeight;
+    const width = visibleCol * this.gridData!.gridSetting!.cellWidth;
 
     this.renderCanvas!.height = height;
     this.renderCanvas!.width = width;
@@ -278,13 +279,13 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onShrinkGrid() {
     const visibleRow: number = Math.ceil(
-      this.canvas!.clientHeight / this.gridSetting!.cellHeight
+      this.canvas!.clientHeight / this.gridData!.gridSetting!.cellHeight
     );
     const visibleCol: number = Math.ceil(
-      this.canvas!.clientWidth / this.gridSetting!.cellWidth
+      this.canvas!.clientWidth / this.gridData!.gridSetting!.cellWidth
     );
-    const height = visibleRow * this.gridSetting!.cellHeight;
-    const width = visibleCol * this.gridSetting!.cellWidth;
+    const height = visibleRow * this.gridData!.gridSetting!.cellHeight;
+    const width = visibleCol * this.gridData!.gridSetting!.cellWidth;
 
     this.renderCanvas!.height = height;
     this.renderCanvas!.width = width;
@@ -297,10 +298,10 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
       if (!pos.isEmpty()) {
         let col: number =
           (pos.column - this.scrollGrid.hScrollValue) *
-          this.gridSetting!.cellWidth;
+          this.gridData!.gridSetting!.cellWidth;
         let row: number =
           (pos.row - this.scrollGrid.vScrollValue) *
-          this.gridSetting!.cellHeight;
+          this.gridData!.gridSetting!.cellHeight;
 
         col -= 4;
         row -= 4;
@@ -315,13 +316,13 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
         const tmpImage: ImageData | null | undefined = this.renderCanvasCtx!.getImageData(
           col,
           row,
-          this.gridSetting!.cellWidth + 8,
-          this.gridSetting!.cellHeight + 12
+          this.gridData!.gridSetting!.cellWidth + 8,
+          this.gridData!.gridSetting!.cellHeight + 12
         );
         this.ctx!.putImageData(
           tmpImage,
           col,
-          row + this.gridSetting!.cellHeaderHeight
+          row + this.gridData!.gridSetting!.cellHeaderHeight
         );
 
       }
@@ -333,10 +334,10 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     const dirY = directionY;
 
     const visibleCol = Math.ceil(
-      this.canvas!.clientWidth / this.gridSetting!.cellWidth
+      this.canvas!.clientWidth / this.gridData!.gridSetting!.cellWidth
     );
     const visibleRow = Math.ceil(
-      this.canvas!.clientHeight / this.gridSetting!.cellHeight
+      this.canvas!.clientHeight / this.gridData!.gridSetting!.cellHeight
     );
 
     this.scrollGrid.hScrollValue += dirX;
@@ -400,10 +401,10 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private moveIt(directionX: number, directionY: number) {
     const visibleRow: number = Math.ceil(
-      this.canvas!.clientHeight / this.gridSetting!.cellHeight
+      this.canvas!.clientHeight / this.gridData!.gridSetting!.cellHeight
     );
     const visibleCol: number = Math.ceil(
-      this.canvas!.clientWidth / this.gridSetting!.cellWidth
+      this.canvas!.clientWidth / this.gridData!.gridSetting!.cellWidth
     );
 
     if (directionX !== 0) {
@@ -424,8 +425,8 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
       const ctx = tempCanvas.getContext('2d');
       ctx!.drawImage(this.renderCanvas!, 0, 0);
 
-      this.renderCanvas!.height = visibleRow * this.gridSetting!.cellHeight;
-      this.renderCanvas!.width = visibleCol * this.gridSetting!.cellWidth;
+      this.renderCanvas!.height = visibleRow * this.gridData!.gridSetting!.cellHeight;
+      this.renderCanvas!.width = visibleCol * this.gridData!.gridSetting!.cellWidth;
 
       this.renderCanvasCtx!.clearRect(
         0,
@@ -435,7 +436,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
       );
       this.renderCanvasCtx!.drawImage(
         tempCanvas,
-        this.gridSetting!.cellWidth * diff,
+        this.gridData!.gridSetting!.cellWidth * diff,
         0
       );
 
@@ -477,8 +478,8 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
       const ctx = tempCanvas.getContext('2d');
       ctx!.drawImage(this.renderCanvas!, 0, 0);
 
-      this.renderCanvas!.height = visibleRow * this.gridSetting!.cellHeight;
-      this.renderCanvas!.width = visibleCol * this.gridSetting!.cellWidth;
+      this.renderCanvas!.height = visibleRow * this.gridData!.gridSetting!.cellHeight;
+      this.renderCanvas!.width = visibleCol * this.gridData!.gridSetting!.cellWidth;
 
       this.renderCanvasCtx!.clearRect(
         0,
@@ -489,7 +490,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
       this.renderCanvasCtx!.drawImage(
         tempCanvas,
         0,
-        this.gridSetting!.cellHeight * diff
+        this.gridData!.gridSetting!.cellHeight * diff
       );
 
       let firstRow = 0;
@@ -515,14 +516,14 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
   drawHeader() {
 
-    const width: number = this.gridData!.columns * this.gridSetting!.cellWidth;
-    this.headerCanvas!.height =  this.gridSetting!.cellHeaderHeight + this.gridSetting!.increaseBorder;
+    const width: number = this.gridData!.columns * this.gridData!.gridSetting!.cellWidth;
+    this.headerCanvas!.height =  this.gridData!.gridSetting!.cellHeaderHeight + this.gridData!.gridSetting!.increaseBorder;
     this.headerCanvas!.width = width;
 
-    const sourceWidth = this.gridSetting!.cellWidthWithHtmlZoom;
-    const sourceHeight = this.gridSetting!.cellHeaderHeightWithHtmlZoom;
-    const destinationWidth = this.gridSetting!.cellWidth;
-    const destinationHeight = this.gridSetting!.cellHeaderHeight;
+    const sourceWidth = this.gridData!.gridSetting!.cellWidthWithHtmlZoom;
+    const sourceHeight = this.gridData!.gridSetting!.cellHeaderHeightWithHtmlZoom;
+    const destinationWidth = this.gridData!.gridSetting!.cellWidth;
+    const destinationHeight = this.gridData!.gridSetting!.cellHeaderHeight;
 
     for (let col = 0; col < this.gridData!.columns; col++) {
       const imgHeader = this.createHeader!.createHeader(col);
@@ -531,7 +532,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
           this.headerCtx!.drawImage(
             imgHeader,
             0,0,sourceWidth,sourceHeight,
-            col * this.gridSetting!.cellWidth,
+            col * this.gridData!.gridSetting!.cellWidth,
             0,destinationWidth,destinationHeight
 
           );
@@ -546,13 +547,13 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     this.vScrollbar!.refresh();
 
     const visibleRow: number = Math.ceil(
-      this.canvas!.clientHeight / this.gridSetting!.cellHeight
+      this.canvas!.clientHeight / this.gridData!.gridSetting!.cellHeight
     );
     const visibleCol: number = Math.ceil(
-      this.canvas!.clientWidth / this.gridSetting!.cellWidth
+      this.canvas!.clientWidth / this.gridData!.gridSetting!.cellWidth
     );
-    const height = visibleRow * this.gridSetting!.cellHeight;
-    const width = visibleCol * this.gridSetting!.cellWidth;
+    const height = visibleRow * this.gridData!.gridSetting!.cellHeight;
+    const width = visibleCol * this.gridData!.gridSetting!.cellWidth;
 
     this.renderCanvas!.height = height;
     this.renderCanvas!.width = width;
@@ -579,15 +580,15 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.ctx!.rect(
         0,
-        this.gridSetting!.cellHeaderHeight,
+        this.gridData!.gridSetting!.cellHeaderHeight,
         this.canvas!.width,
-        this.renderCanvas!.height - this.gridSetting!.cellHeaderHeight
+        this.renderCanvas!.height - this.gridData!.gridSetting!.cellHeaderHeight
       );
 
       this.ctx!.clip();
 
       if (this.isFocused) {
-        this.ctx!.strokeStyle = this.gridSetting!.focusBorderColor;
+        this.ctx!.strokeStyle = this.gridData!.gridSetting!.focusBorderColor;
         this.ctx!.setLineDash([0]);
       } else {
         this.ctx!.setLineDash([1, 2]);
@@ -596,17 +597,17 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
       const col: number =
         (this.position.column - this.scrollGrid.hScrollValue) *
-        this.gridSetting!.cellWidth;
+        this.gridData!.gridSetting!.cellWidth;
       const row: number =
         (this.position.row - this.scrollGrid.vScrollValue) *
-        this.gridSetting!.cellHeight +
-        this.gridSetting!.cellHeaderHeight;
+        this.gridData!.gridSetting!.cellHeight +
+        this.gridData!.gridSetting!.cellHeaderHeight;
 
       this.ctx!.strokeRect(
         col - 1,
         row - 1,
-        this.gridSetting!.cellWidth + 3,
-        this.gridSetting!.cellHeight + 1
+        this.gridData!.gridSetting!.cellWidth + 3,
+        this.gridData!.gridSetting!.cellHeight + 1
       );
 
       this.ctx!.restore();
@@ -618,13 +619,13 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
       if (!pos.isEmpty()) {
         const col: number =
           (pos.column - this.scrollGrid.hScrollValue) *
-          this.gridSetting!.cellWidth;
+          this.gridData!.gridSetting!.cellWidth;
 
         const tmpImage: ImageData = this.headerCtx!.getImageData(
-          pos.column * this.gridSetting!.cellWidth,
+          pos.column * this.gridData!.gridSetting!.cellWidth,
           0,
-          this.gridSetting!.cellWidth,
-          this.gridSetting!.cellHeaderHeight
+          this.gridData!.gridSetting!.cellWidth,
+          this.gridData!.gridSetting!.cellHeaderHeight
         );
         this.ctx!.putImageData(tmpImage, col, 0);
 
@@ -637,18 +638,18 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
       if (!this.position.isEmpty()) {
         this.ctx!.save();
 
-        this.ctx!.fillStyle = this.gridSetting!.focusBorderColor;
+        this.ctx!.fillStyle = this.gridData!.gridSetting!.focusBorderColor;
 
         this.ctx!.globalAlpha = 0.2;
         const col: number =
           (this.position.column - this.scrollGrid.hScrollValue) *
-          this.gridSetting!.cellWidth;
+          this.gridData!.gridSetting!.cellWidth;
 
         this.ctx!.fillRect(
           col,
           0,
-          this.gridSetting!.cellWidth,
-          this.gridSetting!.cellHeaderHeight
+          this.gridData!.gridSetting!.cellWidth,
+          this.gridData!.gridSetting!.cellHeaderHeight
         );
 
         this.ctx!.restore();
@@ -660,10 +661,10 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const tmpRow: number = row + this.scrollGrid.vScrollValue;
     const tmpCol: number = col + this.scrollGrid.hScrollValue;
-    const cellWidth = this.gridSetting!.cellWidth;
-    const cellHeight = this.gridSetting!.cellHeight;
-    // const cellWidthWithHtmlZoom = this.gridSetting!.cellWidthWithHtmlZoom;
-    // const cellHeightWithHtmlZoom = this.gridSetting!.cellHeightWithHtmlZoom;
+    const cellWidth = this.gridData!.gridSetting!.cellWidth;
+    const cellHeight = this.gridData!.gridSetting!.cellHeight;
+    // const cellWidthWithHtmlZoom = this.gridData!.gridSetting!.cellWidthWithHtmlZoom;
+    // const cellHeightWithHtmlZoom = this.gridData!.gridSetting!.cellHeightWithHtmlZoom;
 
     if (tmpRow < this.gridData!.rows && tmpCol < this.gridData!.columns) {
 
@@ -695,14 +696,14 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     const x: number = event.clientX - rect.left;
     const y: number = event.clientY - rect.top;
 
-    if (y >= this.gridSetting!.cellHeaderHeight) {
+    if (y >= this.gridData!.gridSetting!.cellHeaderHeight) {
 
       row =
         Math.floor(
-          (y - this.gridSetting!.cellHeaderHeight) / this.gridSetting!.cellHeight
+          (y - this.gridData!.gridSetting!.cellHeaderHeight) / this.gridData!.gridSetting!.cellHeight
         ) + this.scrollGrid.vScrollValue;
       col =
-        Math.floor(x / this.gridSetting!.cellWidth) + this.scrollGrid.hScrollValue;
+        Math.floor(x / this.gridData!.gridSetting!.cellWidth) + this.scrollGrid.hScrollValue;
     }
 
     return new Position(row, col);
@@ -739,15 +740,15 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.ctx!.rect(
           0,
-          this.gridSetting!.cellHeaderHeight,
+          this.gridData!.gridSetting!.cellHeaderHeight,
           this.canvas!.width,
-          this.renderCanvas!.height - this.gridSetting!.cellHeaderHeight
+          this.renderCanvas!.height - this.gridData!.gridSetting!.cellHeaderHeight
         );
 
         this.ctx!.clip();
 
         this.ctx!.globalAlpha = 0.2;
-        this.ctx!.fillStyle = this.gridSetting!.focusBorderColor;
+        this.ctx!.fillStyle = this.gridData!.gridSetting!.focusBorderColor;
 
         const minCol: number =
           this.position.column < pos.column ? this.position.column : pos.column;
@@ -781,22 +782,22 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     maxRow: number
   ): void {
     let col: number =
-      (minCol - this.scrollGrid.hScrollValue) * this.gridSetting!.cellWidth;
+      (minCol - this.scrollGrid.hScrollValue) * this.gridData!.gridSetting!.cellWidth;
     let row: number =
-      (minRow - this.scrollGrid.vScrollValue) * this.gridSetting!.cellHeight +
-      this.gridSetting!.cellHeaderHeight;
+      (minRow - this.scrollGrid.vScrollValue) * this.gridData!.gridSetting!.cellHeight +
+      this.gridData!.gridSetting!.cellHeaderHeight;
     if (col < 0) {
       col = 0;
     }
-    if (row < this.gridSetting!.cellHeaderHeight) {
-      row = this.gridSetting!.cellHeaderHeight;
+    if (row < this.gridData!.gridSetting!.cellHeaderHeight) {
+      row = this.gridData!.gridSetting!.cellHeaderHeight;
     }
 
     let lastCol: number =
-      (maxCol - this.scrollGrid.hScrollValue) * this.gridSetting!.cellWidth;
+      (maxCol - this.scrollGrid.hScrollValue) * this.gridData!.gridSetting!.cellWidth;
     let lastRow: number =
-      (maxRow - this.scrollGrid.vScrollValue) * this.gridSetting!.cellHeight +
-      this.gridSetting!.cellHeaderHeight;
+      (maxRow - this.scrollGrid.vScrollValue) * this.gridData!.gridSetting!.cellHeight +
+      this.gridData!.gridSetting!.cellHeaderHeight;
 
     if (lastCol > this.canvas!.width) {
       lastCol = this.canvas!.width;
@@ -813,16 +814,16 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private drawSelectedCellBackground(col: number, row: number): void {
     const column: number =
-      (col - this.scrollGrid.hScrollValue) * this.gridSetting!.cellWidth;
+      (col - this.scrollGrid.hScrollValue) * this.gridData!.gridSetting!.cellWidth;
     const rowset: number =
-      (row - this.scrollGrid.vScrollValue) * this.gridSetting!.cellHeight +
-      this.gridSetting!.cellHeaderHeight;
+      (row - this.scrollGrid.vScrollValue) * this.gridData!.gridSetting!.cellHeight +
+      this.gridData!.gridSetting!.cellHeaderHeight;
 
     this.ctx!.fillRect(
       column,
       rowset,
-      this.gridSetting!.cellWidth,
-      this.gridSetting!.cellHeight
+      this.gridData!.gridSetting!.cellWidth,
+      this.gridData!.gridSetting!.cellHeight
     );
   }
 
@@ -831,15 +832,15 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.ctx!.rect(
       0,
-      this.gridSetting!.cellHeaderHeight,
+      this.gridData!.gridSetting!.cellHeaderHeight,
       this.canvas!.width,
-      this.renderCanvas!.height - this.gridSetting!.cellHeaderHeight
+      this.renderCanvas!.height - this.gridData!.gridSetting!.cellHeaderHeight
     );
 
     this.ctx!.clip();
 
     this.ctx!.globalAlpha = 0.2;
-    this.ctx!.fillStyle = this.gridSetting!.focusBorderColor;
+    this.ctx!.fillStyle = this.gridData!.gridSetting!.focusBorderColor;
 
     for (let i = 0; i < this.cellManipulation!.positionCollection.count(); i++) {
       const pos = this.cellManipulation!.positionCollection.item(i);
