@@ -664,8 +664,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     const tmpCol: number = col + this.scrollGrid!.hScrollValue;
     const cellWidth = this.gridData!.gridSetting!.cellWidth;
     const cellHeight = this.gridData!.gridSetting!.cellHeight;
-    // const cellWidthWithHtmlZoom = this.gridData!.gridSetting!.cellWidthWithHtmlZoom;
-    // const cellHeightWithHtmlZoom = this.gridData!.gridSetting!.cellHeightWithHtmlZoom;
+    
 
     if (tmpRow < this.gridData!.rows && tmpCol < this.gridData!.columns) {
 

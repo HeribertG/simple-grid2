@@ -14,7 +14,6 @@ $scrollbar-vertical: 20px;
   flex-direction: row;
   height: calc(100vh -  #{$scrollbar-horizontal});
   width: 100vw;
-  background-color: pink;
 }
 
 // .header {
@@ -29,7 +28,6 @@ $scrollbar-vertical: 20px;
 // }
 
 .grid-body {
-  background-color: yellow;
   width: calc(100vw - #{$scrollbar-vertical} );
   height:100%;
 }
