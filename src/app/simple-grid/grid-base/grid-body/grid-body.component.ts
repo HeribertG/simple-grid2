@@ -410,7 +410,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (directionX !== 0) {
 
-      this.vScrollbar!.value = this.scrollGrid!.hScrollValue;
+      this.hScrollbar!.value = this.scrollGrid!.hScrollValue;
 
       const diff = this.scrollGrid!.lastDifferenceX;
       if (diff === 0) {
