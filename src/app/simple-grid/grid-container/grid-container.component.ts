@@ -3,6 +3,7 @@ import { GridData } from '../grid-base/gridClasses/data-grid';
 import { GridSetting } from '../grid-base/gridClasses/grid-setting';
 import { MergeCell } from '../grid-base/gridClasses/merge-cell';
 import { Position } from '../grid-base/gridClasses/position';
+import { ScrollGrid } from '../grid-base/gridClasses/scroll-grid';
 
 @Component({
   selector: 'app-grid-container',
@@ -13,7 +14,7 @@ export class GridContainerComponent implements OnInit , OnDestroy {
 
   private gridSetting: GridSetting | undefined | null = new GridSetting();
   public gridData: GridData | undefined | null = new GridData(this.gridSetting!);
-  
+  public scrollGrid :ScrollGrid | undefined | null = new ScrollGrid();
 
   constructor() { }
 

@@ -9,8 +9,9 @@ import { GridCellContextMenu } from '../gridClasses/grid-cell-context-menu';
 import { GridCellManipulation } from '../gridClasses/grid-cell-manipulation';
 
 import { Position } from '../gridClasses/position';
+import { ScrollGrid } from '../gridClasses/scroll-grid';
+
 import { HScrollbarComponent } from '../h-scrollbar/h-scrollbar.component';
-import { ScrollGridService } from '../services/scroll-grid.service';
 import { VScrollbarComponent } from '../v-scrollbar/v-scrollbar.component';
 
 
@@ -26,6 +27,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   private gridCellContextMenu: GridCellContextMenu | undefined | null;
   private createCell: CreateCell | undefined | null;
   private createHeader: CreateHeader | undefined | null;
+ 
   
   resizeWindow: (() => void) | undefined;
   visibilitychangeWindow: (() => void) | undefined;
@@ -42,7 +44,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   private headerCtx: CanvasRenderingContext2D | undefined | null;
   private headerCanvas: HTMLCanvasElement | undefined | null;
   private tooltip: HTMLDivElement | undefined | null;
-
+  
 
   contextMenuPosition = { x: '0px', y: '0px' };
 
@@ -51,11 +53,10 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Input() vScrollbar: VScrollbarComponent | undefined | null;
   @Input() hScrollbar: HScrollbarComponent | undefined | null;
-
+  @Input() scrollGrid: ScrollGrid | undefined | null;
 
   constructor(
     private zone: NgZone,
-    private scrollGrid: ScrollGridService,
     private renderer: Renderer2,
   ) { }
 
@@ -171,7 +172,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
   changeLine(value: number): void {
     this.position = new Position(0, 0);
-    this.scrollGrid.resetScrollPosition();
+    this.scrollGrid!.resetScrollPosition();
     this.setMetrics();
     this.vScrollbar!.init();
     this.vScrollbar!.init();
@@ -207,7 +208,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     this.ctx!.drawImage(this.renderCanvas!, 0, 0, this.renderCanvas!.width, this.renderCanvas!.height,
       0, this.gridData!.gridSetting!.cellHeaderHeight, this.renderCanvas!.width, this.renderCanvas!.height);
 
-    let col: number = this.scrollGrid.hScrollValue;
+    let col: number = this.scrollGrid!.hScrollValue;
     if (col < 0) {
       col = 0;
     }
@@ -240,7 +241,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
       Math.floor(this.canvas!.clientHeight / this.gridData!.gridSetting!.cellHeight) - 1;
     const visibleCols: number =
       Math.floor(this.canvas!.clientWidth / this.gridData!.gridSetting!.cellWidth) - 1;
-    this.scrollGrid.setMetrics(
+    this.scrollGrid!.setMetrics(
       visibleCols,
       this.gridData!.columns,
       visibleRows,
@@ -297,10 +298,10 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     if (pos != null) {
       if (!pos.isEmpty()) {
         let col: number =
-          (pos.column - this.scrollGrid.hScrollValue) *
+          (pos.column - this.scrollGrid!.hScrollValue) *
           this.gridData!.gridSetting!.cellWidth;
         let row: number =
-          (pos.row - this.scrollGrid.vScrollValue) *
+          (pos.row - this.scrollGrid!.vScrollValue) *
           this.gridData!.gridSetting!.cellHeight;
 
         col -= 4;
@@ -340,8 +341,8 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
       this.canvas!.clientHeight / this.gridData!.gridSetting!.cellHeight
     );
 
-    this.scrollGrid.hScrollValue += dirX;
-    this.scrollGrid.vScrollValue += dirY;
+    this.scrollGrid!.hScrollValue += dirX;
+    this.scrollGrid!.vScrollValue += dirY;
 
     this.zone.run(() => {
       try {
@@ -409,9 +410,9 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (directionX !== 0) {
 
-      this.vScrollbar!.value = this.scrollGrid.hScrollValue;
+      this.vScrollbar!.value = this.scrollGrid!.hScrollValue;
 
-      const diff = this.scrollGrid.lastDifferenceX;
+      const diff = this.scrollGrid!.lastDifferenceX;
       if (diff === 0) {
         return;
       }
@@ -460,9 +461,9 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (directionY !== 0) {
 
-      this.vScrollbar!.value = this.scrollGrid.vScrollValue;
+      this.vScrollbar!.value = this.scrollGrid!.vScrollValue;
 
-      const diff = this.scrollGrid.lastDifferenceY;
+      const diff = this.scrollGrid!.lastDifferenceY;
       if (diff === 0) {
         return;
       }
@@ -596,10 +597,10 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
       }
 
       const col: number =
-        (this.position.column - this.scrollGrid.hScrollValue) *
+        (this.position.column - this.scrollGrid!.hScrollValue) *
         this.gridData!.gridSetting!.cellWidth;
       const row: number =
-        (this.position.row - this.scrollGrid.vScrollValue) *
+        (this.position.row - this.scrollGrid!.vScrollValue) *
         this.gridData!.gridSetting!.cellHeight +
         this.gridData!.gridSetting!.cellHeaderHeight;
 
@@ -618,7 +619,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     if (pos !== undefined) {
       if (!pos.isEmpty()) {
         const col: number =
-          (pos.column - this.scrollGrid.hScrollValue) *
+          (pos.column - this.scrollGrid!.hScrollValue) *
           this.gridData!.gridSetting!.cellWidth;
 
         const tmpImage: ImageData = this.headerCtx!.getImageData(
@@ -642,7 +643,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.ctx!.globalAlpha = 0.2;
         const col: number =
-          (this.position.column - this.scrollGrid.hScrollValue) *
+          (this.position.column - this.scrollGrid!.hScrollValue) *
           this.gridData!.gridSetting!.cellWidth;
 
         this.ctx!.fillRect(
@@ -659,8 +660,8 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private addCells(row: number, col: number) {
 
-    const tmpRow: number = row + this.scrollGrid.vScrollValue;
-    const tmpCol: number = col + this.scrollGrid.hScrollValue;
+    const tmpRow: number = row + this.scrollGrid!.vScrollValue;
+    const tmpCol: number = col + this.scrollGrid!.hScrollValue;
     const cellWidth = this.gridData!.gridSetting!.cellWidth;
     const cellHeight = this.gridData!.gridSetting!.cellHeight;
     // const cellWidthWithHtmlZoom = this.gridData!.gridSetting!.cellWidthWithHtmlZoom;
@@ -701,9 +702,9 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
       row =
         Math.floor(
           (y - this.gridData!.gridSetting!.cellHeaderHeight) / this.gridData!.gridSetting!.cellHeight
-        ) + this.scrollGrid.vScrollValue;
+        ) + this.scrollGrid!.vScrollValue;
       col =
-        Math.floor(x / this.gridData!.gridSetting!.cellWidth) + this.scrollGrid.hScrollValue;
+        Math.floor(x / this.gridData!.gridSetting!.cellWidth) + this.scrollGrid!.hScrollValue;
     }
 
     return new Position(row, col);
@@ -782,9 +783,9 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     maxRow: number
   ): void {
     let col: number =
-      (minCol - this.scrollGrid.hScrollValue) * this.gridData!.gridSetting!.cellWidth;
+      (minCol - this.scrollGrid!.hScrollValue) * this.gridData!.gridSetting!.cellWidth;
     let row: number =
-      (minRow - this.scrollGrid.vScrollValue) * this.gridData!.gridSetting!.cellHeight +
+      (minRow - this.scrollGrid!.vScrollValue) * this.gridData!.gridSetting!.cellHeight +
       this.gridData!.gridSetting!.cellHeaderHeight;
     if (col < 0) {
       col = 0;
@@ -794,9 +795,9 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     let lastCol: number =
-      (maxCol - this.scrollGrid.hScrollValue) * this.gridData!.gridSetting!.cellWidth;
+      (maxCol - this.scrollGrid!.hScrollValue) * this.gridData!.gridSetting!.cellWidth;
     let lastRow: number =
-      (maxRow - this.scrollGrid.vScrollValue) * this.gridData!.gridSetting!.cellHeight +
+      (maxRow - this.scrollGrid!.vScrollValue) * this.gridData!.gridSetting!.cellHeight +
       this.gridData!.gridSetting!.cellHeaderHeight;
 
     if (lastCol > this.canvas!.width) {
@@ -814,9 +815,9 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private drawSelectedCellBackground(col: number, row: number): void {
     const column: number =
-      (col - this.scrollGrid.hScrollValue) * this.gridData!.gridSetting!.cellWidth;
+      (col - this.scrollGrid!.hScrollValue) * this.gridData!.gridSetting!.cellWidth;
     const rowset: number =
-      (row - this.scrollGrid.vScrollValue) * this.gridData!.gridSetting!.cellHeight +
+      (row - this.scrollGrid!.vScrollValue) * this.gridData!.gridSetting!.cellHeight +
       this.gridData!.gridSetting!.cellHeaderHeight;
 
     this.ctx!.fillRect(

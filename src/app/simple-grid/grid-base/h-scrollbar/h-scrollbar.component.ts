@@ -4,13 +4,15 @@ import {
   HostListener,
   Inject,
   Input,
+  NgZone,
   OnDestroy,
   OnInit
 } from '@angular/core';
 import { MDraw } from '../../helpers/draw-helper';
 import { Gradient3DBorderStyleEnum } from '../../helpers/enums/draw.enum';
 import { GridBodyComponent } from '../grid-body/grid-body.component';
-import { ScrollGridService } from '../services/scroll-grid.service';
+import { ScrollGrid } from '../gridClasses/scroll-grid';
+
 
 @Component({
   selector: 'app-h-scrollbar',
@@ -38,10 +40,11 @@ export class HScrollbarComponent implements OnInit, AfterViewInit, OnDestroy {
   private requestID :number| undefined | null;
   private moveAnimationValue = 0;
 
-  @Input() gridBody!: GridBodyComponent;
+  @Input() gridBody!: GridBodyComponent| undefined | null;
+  @Input() scrollGrid: ScrollGrid | undefined | null;
 
   constructor(
-    @Inject(ScrollGridService) private scrollGrid: ScrollGridService
+    private zone: NgZone,
   ) { }
 
   /* #region ng */
@@ -57,10 +60,11 @@ export class HScrollbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.ctx = null;
-    this.canvas = null;
-    this.imgThumb = null;
-    this.imgSelectedThumb = null;
+    this.ctx = undefined;
+    this.canvas = undefined;
+    this.imgThumb = undefined;
+    this.imgSelectedThumb = undefined;
+    this.scrollGrid = undefined;
   }
   /* #endregion ng */
 
@@ -87,15 +91,15 @@ export class HScrollbarComponent implements OnInit, AfterViewInit, OnDestroy {
         res = 0;
       }
 
-      const diff: number = res - this.scrollGrid.hScrollValue;
+      const diff: number = res - this.scrollGrid!.hScrollValue;
 
       this.isDirty = true;
-      this.gridBody.moveGrid(diff, 0);
+      this.gridBody!.moveGrid(diff, 0);
       this.isDirty = false;
     }
   }
   private get scrollLeft(): number {
-    let res: number = Math.ceil(this.scrollGrid.hScrollValue * this.tickSize);
+    let res: number = Math.ceil(this.scrollGrid!.hScrollValue * this.tickSize);
     if (res === undefined || Number.isNaN(res)) {
       res = 0;
     }
@@ -118,7 +122,7 @@ export class HScrollbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.reDraw();
   }
   get value(): number {
-    return this.scrollGrid.hScrollValue;
+    return this.scrollGrid!.hScrollValue;
   }
 
   refresh() {
@@ -199,7 +203,7 @@ export class HScrollbarComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.canvas) {
 
       const w: number = this.canvas.clientWidth;
-      let moveZoneLength = w / this.scrollGrid.colPercent;
+      let moveZoneLength = w / this.scrollGrid!.colPercent;
 
       this.thumbLength = this.canvas.clientWidth - moveZoneLength;
 
@@ -208,7 +212,7 @@ export class HScrollbarComponent implements OnInit, AfterViewInit, OnDestroy {
         moveZoneLength -= 10;
       }
 
-      this.tickSize = moveZoneLength / this.scrollGrid.maxCols;
+      this.tickSize = moveZoneLength / this.scrollGrid!.maxCols;
       this.createThumb();
     }
   }
@@ -283,7 +287,12 @@ export class HScrollbarComponent implements OnInit, AfterViewInit, OnDestroy {
     event: PointerEvent
   ): void {
     if (this.MousePointThumb) {
-      this.scrollLeft = event.clientX - this.MouseXToThumbY;
+      const x =  event.clientX - this.MouseXToThumbY;
+      this.zone.run(() => {
+        if (this.MousePointThumb) {
+          this.scrollLeft = x;
+        }
+      });
     }
   }
 
@@ -301,9 +310,9 @@ export class HScrollbarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   moveAnimation() {
     if (this.moveAnimationValue < 0) {
-      this.gridBody.moveGrid(-5, 0);
+      this.gridBody!.moveGrid(-5, 0);
     } else if (this.moveAnimationValue > 0) {
-      this.gridBody.moveGrid(5, 0);
+      this.gridBody!.moveGrid(5, 0);
     } else {
       this.stopMoveAnimation();
     }

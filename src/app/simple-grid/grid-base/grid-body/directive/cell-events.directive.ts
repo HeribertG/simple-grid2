@@ -8,7 +8,6 @@ import {
 
 
 import { Position } from '../../gridClasses/position';
-import { ScrollGridService } from '../../services/scroll-grid.service';
 import { GridBodyComponent } from '../grid-body.component';
 
 
@@ -27,9 +26,9 @@ export class CellEventsDirective {
 
   constructor(
     private zone: NgZone,
-    private gridBody: GridBodyComponent,
+    private gridBody: GridBodyComponent ,
     public viewContainerRef: ViewContainerRef,
-    @Inject(ScrollGridService) private scrollGrid: ScrollGridService
+   
   ) {}
 
   @HostListener('mouseenter', ['$event']) onMouseEnter(event: MouseEvent) {}
@@ -122,11 +121,11 @@ export class CellEventsDirective {
           this.gridBody.position.column
         );
 
-        if (this.scrollGrid.maxRows <= 1) {
-          this.scrollGrid.vScrollValue = 0;
+        if (this.gridBody.scrollGrid!.maxRows <= 1) {
+          this.gridBody.scrollGrid!.vScrollValue = 0;
         } else {
           if (
-            this.scrollGrid.vScrollValue + this.scrollGrid.visibleRows - 1 <
+            this.gridBody.scrollGrid!.vScrollValue + this.gridBody.scrollGrid!.visibleRows - 1 <
             this.gridBody.position.row
           ) {
             this.gridBody.moveGrid(0, 1);
@@ -146,18 +145,18 @@ export class CellEventsDirective {
       }
 
       let nextVisibleRow: number =
-        this.scrollGrid.vScrollValue + this.scrollGrid.visibleRows - 1;
+        this.gridBody.scrollGrid!.vScrollValue + this.gridBody.scrollGrid!.visibleRows - 1;
 
       if (nextVisibleRow > this.gridBody.gridData!.rows) {
         nextVisibleRow = this.gridBody.gridData!.rows - 1;
       }
 
-      if (this.scrollGrid.maxRows <= 1) {
-        this.scrollGrid.vScrollValue = 0;
-      } else if (this.scrollGrid.maxRows >= nextVisibleRow) {
-        this.scrollGrid.vScrollValue = nextVisibleRow;
+      if (this.gridBody.scrollGrid!.maxRows <= 1) {
+        this.gridBody.scrollGrid!.vScrollValue = 0;
+      } else if (this.gridBody.scrollGrid!.maxRows >= nextVisibleRow) {
+        this.gridBody.scrollGrid!.vScrollValue = nextVisibleRow;
       } else {
-        this.scrollGrid.vScrollValue = this.scrollGrid.maxRows;
+        this.gridBody.scrollGrid!.vScrollValue = this.gridBody.scrollGrid!.maxRows;
       }
 
       this.gridBody.position = new Position(
@@ -188,10 +187,10 @@ export class CellEventsDirective {
           this.gridBody.position.column
         );
 
-        if (this.scrollGrid.maxRows <= 1) {
-          this.scrollGrid.vScrollValue = 0;
+        if (this.gridBody.scrollGrid!.maxRows <= 1) {
+          this.gridBody.scrollGrid!.vScrollValue = 0;
         } else {
-          if (this.scrollGrid.vScrollValue > this.gridBody.position.row) {
+          if (this.gridBody.scrollGrid!.vScrollValue > this.gridBody.position.row) {
             this.gridBody.moveGrid(0, -1);
           }
         }
@@ -210,16 +209,16 @@ export class CellEventsDirective {
       }
 
       let previousVisibleRow: number =
-        this.scrollGrid.vScrollValue - this.scrollGrid.visibleRows + 1;
+        this.gridBody.scrollGrid!.vScrollValue - this.gridBody.scrollGrid!.visibleRows + 1;
 
       if (previousVisibleRow < 0) {
         previousVisibleRow = 0;
       }
 
-      if (this.scrollGrid.maxRows <= 1) {
-        this.scrollGrid.vScrollValue = 0;
+      if (this.gridBody.scrollGrid!.maxRows <= 1) {
+        this.gridBody.scrollGrid!.vScrollValue = 0;
       } else {
-        this.scrollGrid.vScrollValue = previousVisibleRow;
+        this.gridBody.scrollGrid!.vScrollValue = previousVisibleRow;
       }
 
       this.gridBody.position = new Position(
@@ -242,10 +241,10 @@ export class CellEventsDirective {
         }
       }
 
-      if (this.scrollGrid.maxRows <= 1) {
-        this.scrollGrid.vScrollValue = 0;
+      if (this.gridBody.scrollGrid!.maxRows <= 1) {
+        this.gridBody.scrollGrid!.vScrollValue = 0;
       } else {
-        this.scrollGrid.vScrollValue = this.scrollGrid.maxRows;
+        this.gridBody.scrollGrid!.vScrollValue = this.gridBody.scrollGrid!.maxRows;
       }
 
       this.gridBody.position = new Position(
@@ -267,7 +266,7 @@ export class CellEventsDirective {
         }
       }
 
-      this.scrollGrid.vScrollValue = 0;
+      this.gridBody.scrollGrid!.vScrollValue = 0;
 
       this.gridBody.position = new Position(
         0,
@@ -294,7 +293,7 @@ export class CellEventsDirective {
           previousColumn
         );
 
-        if (this.gridBody.position.column < this.scrollGrid.hScrollValue) {
+        if (this.gridBody.position.column < this.gridBody.scrollGrid!.hScrollValue) {
           this.gridBody.moveGrid(-1, 0);
         }
       }
@@ -321,7 +320,7 @@ export class CellEventsDirective {
 
         if (
           this.gridBody.position.column >
-          this.scrollGrid.hScrollValue + this.scrollGrid.visibleCols
+          this.gridBody.scrollGrid!.hScrollValue + this.gridBody.scrollGrid!.visibleCols
         ) {
           this.gridBody.moveGrid(1, 0);
         }
@@ -418,26 +417,26 @@ export class CellEventsDirective {
   }
 
   scrollOnPoint(pos: Position) {
-    if (pos.column < this.scrollGrid.hScrollValue) {
+    if (pos.column < this.gridBody.scrollGrid!.hScrollValue) {
       this.gridBody.moveGrid(-1, 0);
       return;
     }
 
     const lastVisibleColum =
-      this.scrollGrid.visibleCols + this.scrollGrid.hScrollValue;
+      this.gridBody.scrollGrid!.visibleCols + this.gridBody.scrollGrid!.hScrollValue;
 
     if (pos.column > lastVisibleColum) {
       this.gridBody.moveGrid(1, 0);
       return;
     }
 
-    if (pos.row < this.scrollGrid.vScrollValue) {
+    if (pos.row < this.gridBody.scrollGrid!.vScrollValue) {
       this.gridBody.moveGrid(0, -1);
       return;
     }
 
     const lastVisibleRow =
-      this.scrollGrid.visibleRows + this.scrollGrid.vScrollValue;
+      this.gridBody.scrollGrid!.visibleRows + this.gridBody.scrollGrid!.vScrollValue;
 
     if (pos.row >= lastVisibleRow) {
       this.gridBody.moveGrid(0, 1);

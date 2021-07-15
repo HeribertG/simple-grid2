@@ -1,8 +1,8 @@
 import { AfterViewInit, Component, HostListener, Inject, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
-import { ScrollGridService } from '../services/scroll-grid.service';
 import { GridBodyComponent } from '../grid-body/grid-body.component';
 import { MDraw } from '../../helpers/draw-helper';
 import { Gradient3DBorderStyleEnum } from '../../helpers/enums/draw.enum';
+import { ScrollGrid } from '../gridClasses/scroll-grid';
 
 @Component({
   selector: 'app-v-scrollbar',
@@ -30,10 +30,10 @@ export class VScrollbarComponent implements OnInit, AfterViewInit, OnDestroy {
   private moveAnimationValue = 0;
 
   @Input() gridBody: GridBodyComponent| undefined | null;
+  @Input() scrollGrid: ScrollGrid | undefined | null;
 
   constructor(
     private zone: NgZone,
-    @Inject(ScrollGridService) private scrollGrid: ScrollGridService
   ) { }
 
   /* #region ng */
@@ -49,10 +49,11 @@ export class VScrollbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.ctx = null;
-    this.canvas = null;
-    this.imgThumb = null;
-    this.imgSelectedThumb = null;
+    this.ctx = undefined;
+    this.canvas = undefined;
+    this.imgThumb = undefined;
+    this.imgSelectedThumb = undefined;
+    this.scrollGrid = undefined;
   }
 
   /* #endregion ng */
@@ -81,7 +82,7 @@ export class VScrollbarComponent implements OnInit, AfterViewInit, OnDestroy {
         res = 0;
       }
 
-      const diff: number = res - this.scrollGrid.vScrollValue;
+      const diff: number = res - this.scrollGrid!.vScrollValue;
 
       this.isDirty = true;
       if (diff !== 0) {
@@ -93,7 +94,7 @@ export class VScrollbarComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   private get scrollTop(): number {
-    let res: number = Math.ceil(this.scrollGrid.vScrollValue * this.tickSize);
+    let res: number = Math.ceil(this.scrollGrid!.vScrollValue * this.tickSize);
     if (res === undefined || Number.isNaN(res)) {
       res = 0;
     }
@@ -106,7 +107,7 @@ export class VScrollbarComponent implements OnInit, AfterViewInit, OnDestroy {
       _value = 0;
     }
 
-    let res: number = Math.ceil(this.scrollGrid.vScrollValue * this.tickSize);
+    let res: number = Math.ceil(this.scrollGrid!.vScrollValue * this.tickSize);
     if (res === undefined || Number.isNaN(res)) {
       res = 0;
     }
@@ -116,7 +117,7 @@ export class VScrollbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.reDraw();
   }
   get value(): number {
-    return this.scrollGrid.vScrollValue;
+    return this.scrollGrid!.vScrollValue;
   }
 
   refresh() {
@@ -196,7 +197,7 @@ export class VScrollbarComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const h: number = this.canvas!.clientHeight;
-    let moveZoneLength = h / this.scrollGrid.rowPercent;
+    let moveZoneLength = h / this.scrollGrid!.rowPercent;
 
     this.thumbLength = this.canvas!.clientHeight - moveZoneLength;
 
@@ -206,7 +207,7 @@ export class VScrollbarComponent implements OnInit, AfterViewInit, OnDestroy {
       moveZoneLength -= 10;
     }
 
-    this.tickSize = moveZoneLength / this.scrollGrid.maxRows;
+    this.tickSize = moveZoneLength / this.scrollGrid!.maxRows;
     this.createThumb();
   }
   /* #region Events */

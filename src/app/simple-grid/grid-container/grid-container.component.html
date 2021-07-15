@@ -8,14 +8,14 @@
     </div> -->
     <div class="grid-box">
         <div class="grid-body" >
-            <app-grid-body #gridBody [gridData]="gridData" [vScrollbar]="vScrollbar" [hScrollbar]="hScrollbar"></app-grid-body>
+            <app-grid-body #gridBody [gridData]="gridData" [scrollGrid]="scrollGrid"  [vScrollbar]="vScrollbar" [hScrollbar]="hScrollbar"></app-grid-body>
         </div>
         <div  class="v-scrollbar">
-            <app-v-scrollbar  #vScrollbar [gridBody]="gridBody" ></app-v-scrollbar>
+            <app-v-scrollbar  #vScrollbar [scrollGrid]="scrollGrid"  [gridBody]="gridBody" ></app-v-scrollbar>
         </div>
 
     </div>
     <div class="h-scrollbar">
-        <app-h-scrollbar  #hScrollbar [gridBody]="gridBody"></app-h-scrollbar>
+        <app-h-scrollbar  #hScrollbar [scrollGrid]="scrollGrid" [gridBody]="gridBody"></app-h-scrollbar>
     </div>
 </div>
