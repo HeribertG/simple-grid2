@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, NgZone, OnDestroy, OnInit, Renderer2 } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, NgZone, OnDestroy, OnInit, Output, Renderer2 } from '@angular/core';
 import { MDraw } from '../../helpers/draw-helper';
 import { MenuIDEnum } from '../../helpers/enums/cell-settings.enum';
 import { ContextMenu } from '../gridClasses/context-menu';
@@ -22,26 +22,28 @@ import { VScrollbarComponent } from '../v-scrollbar/v-scrollbar.component';
 })
 export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
+  @Input() gridData: GridData | undefined | null;
+  @Input() vScrollbar: VScrollbarComponent | undefined | null;
+  @Input() hScrollbar: HScrollbarComponent | undefined | null;
+  @Input() scrollGrid: ScrollGrid | undefined | null;
+  @Input() gridCellContextMenu: GridCellContextMenu | undefined | null;
+  @Output() contextMenuActionEvent = new EventEmitter<ContextMenu>();
 
   cellManipulation: GridCellManipulation | undefined | null;
-  private gridCellContextMenu: GridCellContextMenu | undefined | null;
-  private createCell: CreateCell | undefined | null;
-  private createHeader: CreateHeader | undefined | null;
-
-
+  isFocused = true;
+  isBusy = false;
+  subMenus: ContextMenu[] | undefined | null;
+  isShift = false;
+  isCtrl = false;
+  AnchorKeyPosition: Position | undefined;
+  
+  
   resizeWindow: (() => void) | undefined;
   visibilitychangeWindow: (() => void) | undefined;
-
-
-
-  public isFocused = true;
-  public isBusy = false;
-  public subMenus: ContextMenu[] | undefined | null;
-
-  public isShift = false;
-  public isCtrl = false;
-  public AnchorKeyPosition: Position | undefined;
-
+   
+  
+  private createCell: CreateCell | undefined | null;
+  private createHeader: CreateHeader | undefined | null;
   private ctx: CanvasRenderingContext2D | undefined | null;
   private renderCanvasCtx: CanvasRenderingContext2D | undefined | null;
   private canvas: HTMLCanvasElement | undefined | null;
@@ -51,15 +53,8 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   private tooltip: HTMLDivElement | undefined | null;
   private contextMenu: HTMLDivElement | undefined | null;
   private isContextMenu = false;
+  private contextMenuPosition = { x: '0px', y: '0px' };
 
-  contextMenuPosition = { x: '0px', y: '0px' };
-
-  @Input() gridData: GridData | undefined | null;
-
-
-  @Input() vScrollbar: VScrollbarComponent | undefined | null;
-  @Input() hScrollbar: HScrollbarComponent | undefined | null;
-  @Input() scrollGrid: ScrollGrid | undefined | null;
 
   constructor(
     private zone: NgZone,
@@ -106,11 +101,9 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.cellManipulation = new GridCellManipulation(this.gridData!.gridSetting!);
-    this.gridCellContextMenu = new GridCellContextMenu(this.gridData!);
     this.createCell = new CreateCell(this.gridData!);
     this.createHeader = new CreateHeader(this.gridData!);
     this.init();
-
   }
 
   ngOnDestroy(): void {
@@ -137,7 +130,6 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     this.contextMenu = undefined;
 
   }
-
 
   init(): void {
     const tmpDate = new Date(Date.now());
@@ -1068,6 +1060,8 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onContextMenuAction(value: ContextMenu): void {
 
+    this.contextMenuActionEvent.emit(value);
+    
     if(value.isEnabled){
       this.removeMenu();
       switch (value.id) {

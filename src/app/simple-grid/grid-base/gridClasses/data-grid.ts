@@ -1,5 +1,7 @@
 import { WeekDay } from "@angular/common";
+import { MenuIDEnum } from "../../helpers/enums/cell-settings.enum";
 import { WeekDaysEnum } from "../../helpers/enums/grid-settings.enum";
+import { ContextMenu } from "./context-menu";
 import { GridCell, HeaderCell, IGridCell, IHeaderCell } from "./grid-cell";
 import { GridSetting } from "./grid-setting";
 import { IMergeCell, MergeCellCollection } from "./merge-cell";
@@ -165,4 +167,6 @@ export class GridData {
     gridCell.mainText = 'Zelle ' + row.toString() + ' / ' + col.toString();
     gridCell.secondSubText = row.toString() + ' / ' + col.toString();
   }
+
+
 }
