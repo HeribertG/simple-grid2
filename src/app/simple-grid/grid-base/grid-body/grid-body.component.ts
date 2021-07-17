@@ -27,8 +27,8 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   private gridCellContextMenu: GridCellContextMenu | undefined | null;
   private createCell: CreateCell | undefined | null;
   private createHeader: CreateHeader | undefined | null;
- 
-  
+
+
   resizeWindow: (() => void) | undefined;
   visibilitychangeWindow: (() => void) | undefined;
 
@@ -37,6 +37,11 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   public isFocused = true;
   public isBusy = false;
   public subMenus: ContextMenu[] | undefined | null;
+
+  public isShift = false;
+  public isCtrl = false;
+  public AnchorKeyPosition: Position | undefined;
+
   private ctx: CanvasRenderingContext2D | undefined | null;
   private renderCanvasCtx: CanvasRenderingContext2D | undefined | null;
   private canvas: HTMLCanvasElement | undefined | null;
@@ -44,7 +49,8 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   private headerCtx: CanvasRenderingContext2D | undefined | null;
   private headerCanvas: HTMLCanvasElement | undefined | null;
   private tooltip: HTMLDivElement | undefined | null;
-  
+  private contextMenu: HTMLDivElement | undefined | null;
+  private isContextMenu = false;
 
   contextMenuPosition = { x: '0px', y: '0px' };
 
@@ -60,7 +66,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     private renderer: Renderer2,
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
 
     this.resizeWindow = this.renderer.listen('window', 'resize', (event) => {
       this.resize(event);
@@ -69,9 +75,6 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     this.visibilitychangeWindow = this.renderer.listen('window', 'visibilitychange', (event) => {
       this.visibilityChange(event);
     });
-
-    this.canvas! = document.getElementById('gridCanvas') as HTMLCanvasElement;
-
 
     this.canvas! = document.getElementById('gridCanvas') as HTMLCanvasElement;
     this.renderCanvas! = document.createElement('canvas') as HTMLCanvasElement;
@@ -98,14 +101,14 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     this.headerCtx.imageSmoothingQuality = 'high';
 
     this.tooltip = document.getElementById('tooltip') as HTMLDivElement;
-
+    this.contextMenu = document.getElementById('contextMenu') as HTMLDivElement;
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.cellManipulation = new GridCellManipulation(this.gridData!.gridSetting!);
     this.gridCellContextMenu = new GridCellContextMenu(this.gridData!);
-    this.createCell = new CreateCell( this.gridData!);
-    this.createHeader = new CreateHeader( this.gridData!);
+    this.createCell = new CreateCell(this.gridData!);
+    this.createHeader = new CreateHeader(this.gridData!);
     this.init();
 
   }
@@ -116,21 +119,23 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.visibilitychangeWindow) { this.visibilitychangeWindow(); }
 
     this.gridCellContextMenu!.destroy();
-    this.gridCellContextMenu = null;
+    this.gridCellContextMenu = undefined;
     this.cellManipulation!.destroy();
-    this.cellManipulation = null;
+    this.cellManipulation = undefined;
     this.createCell!.destroy();
-    this.createCell = null;
+    this.createCell = undefined;
     this.createHeader!.destroy();
-    this.createHeader = null;
+    this.createHeader = undefined;
 
     this.gridData?.mergeCellCollection!.clear();
-    this.gridData = null;
-    this.ctx = null;
-    this.canvas = null;
-    this.renderCanvas = null;
-    this.headerCanvas = null;
-    this.tooltip = null;
+    this.gridData = undefined;
+    this.ctx = undefined;
+    this.canvas = undefined;
+    this.renderCanvas = undefined;
+    this.headerCanvas = undefined;
+    this.tooltip = undefined;
+    this.contextMenu = undefined;
+
   }
 
 
@@ -148,15 +153,41 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private resize = (event: any): void => {
 
+    // if (event.currentTarget.CSSScale.length > 0) {
+    //   setTimeout(() => {
+    //     this.renderer.setStyle('window','transform','scale(1)');
+    //     this.ctx!.scale(1,1);
+    //     this.renderCanvasCtx!.scale(1,1);
+    //     this.headerCtx!.scale(1,1);
+    //     this.ctx!.setTransform(1, 0, 0, 1, 0, 0);
+    //     this.renderCanvasCtx!.setTransform(1, 0, 0, 1, 0, 0);
+    //     this.headerCtx!.setTransform(1, 0, 0, 1, 0, 0);
+
+    //   }, 100);
+
+    // } else {
+    //   this.setMetrics();
+    //   this.refreshGrid();
+    // }
+
+    // this.renderer.setStyle('window', 'transform', 'scale(1)');
+    // this.ctx!.scale(1, 1);
+    // this.renderCanvasCtx!.scale(1, 1);
+    // this.headerCtx!.scale(1, 1);
+    // this.ctx!.setTransform(1, 0, 0, 1, 0, 0);
+    // this.renderCanvasCtx!.setTransform(1, 0, 0, 1, 0, 0);
+    // this.headerCtx!.setTransform(1, 0, 0, 1, 0, 0);
+
     this.setMetrics();
     this.refreshGrid();
+    console.log('resize', event);
   }
 
   private visibilityChange = (event: any): void => {
-
+    console.log('visibilityChange', event);
   }
 
-  changeZoom(value: number) {
+  changeZoom(value: number): void {
 
     this.gridData!.gridSetting!.zoom = Math.round(value * 10) / 10;
 
@@ -234,7 +265,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private setMetrics() {
+  private setMetrics(): void {
     this.gridData!.gridSetting?.reset();
 
     const visibleRows: number =
@@ -249,7 +280,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
-  onGrowGrid() {
+  onGrowGrid(): void {
     const oldVisibleRow: number = Math.ceil(
       this.renderCanvas!.clientHeight / this.gridData!.gridSetting!.cellHeight
     );
@@ -278,7 +309,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     // this.refreshGrid();
   }
 
-  onShrinkGrid() {
+  onShrinkGrid(): void {
     const visibleRow: number = Math.ceil(
       this.canvas!.clientHeight / this.gridData!.gridSetting!.cellHeight
     );
@@ -294,7 +325,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     // this.refreshGrid();
   }
 
-  refreshCell(pos: Position) {
+  refreshCell(pos: Position): void {
     if (pos != null) {
       if (!pos.isEmpty()) {
         let col: number =
@@ -400,7 +431,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  private moveIt(directionX: number, directionY: number) {
+  private moveIt(directionX: number, directionY: number): void {
     const visibleRow: number = Math.ceil(
       this.canvas!.clientHeight / this.gridData!.gridSetting!.cellHeight
     );
@@ -515,10 +546,10 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     this.refreshGrid();
   }
 
-  drawHeader() {
+  drawHeader(): void {
 
     const width: number = this.gridData!.columns * this.gridData!.gridSetting!.cellWidth;
-    this.headerCanvas!.height =  this.gridData!.gridSetting!.cellHeaderHeight + this.gridData!.gridSetting!.increaseBorder;
+    this.headerCanvas!.height = this.gridData!.gridSetting!.cellHeaderHeight + this.gridData!.gridSetting!.increaseBorder;
     this.headerCanvas!.width = width;
 
     const sourceWidth = this.gridData!.gridSetting!.cellWidthWithHtmlZoom;
@@ -532,9 +563,9 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
         if (col < this.gridData!.columns) {
           this.headerCtx!.drawImage(
             imgHeader,
-            0,0,sourceWidth,sourceHeight,
+            0, 0, sourceWidth, sourceHeight,
             col * this.gridData!.gridSetting!.cellWidth,
-            0,destinationWidth,destinationHeight
+            0, destinationWidth, destinationHeight
 
           );
         }
@@ -542,7 +573,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  drawGrid() {
+  drawGrid(): void {
 
     this.vScrollbar!.refresh();
     this.vScrollbar!.refresh();
@@ -575,7 +606,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     this.refreshGrid();
   }
 
-  drawSelectedCell() {
+  drawSelectedCell(): void {
     if (this.position != null && !this.position.isEmpty()) {
       this.ctx!.save();
 
@@ -658,20 +689,20 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private addCells(row: number, col: number) {
+  private addCells(row: number, col: number): void {
 
     const tmpRow: number = row + this.scrollGrid!.vScrollValue;
     const tmpCol: number = col + this.scrollGrid!.hScrollValue;
     const cellWidth = this.gridData!.gridSetting!.cellWidth;
     const cellHeight = this.gridData!.gridSetting!.cellHeight;
-    
+
 
     if (tmpRow < this.gridData!.rows && tmpCol < this.gridData!.columns) {
 
       const result = this.createCell!.createCell(tmpRow, tmpCol);
-      
-      const originalCol = result[1]!.originalCol +(col-tmpCol);
-      const originalRow = result[1]!.originalRow +(row-tmpRow);
+
+      const originalCol = result[1]!.originalCol + (col - tmpCol);
+      const originalRow = result[1]!.originalRow + (row - tmpRow);
 
       this.renderCanvasCtx!.drawImage(
         result[0],
@@ -689,7 +720,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  calcCorrectCoordinate(event: MouseEvent) {
+  calcCorrectCoordinate(event: MouseEvent): Position {
     let row = -1;
     let col = -1;
     const rect = this.canvas!.getBoundingClientRect();
@@ -711,12 +742,29 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /* #region position and selection */
 
+  setShiftKey(): void {
+    if (!this.isShift) {
+      this.isShift = true;
+      this.AnchorKeyPosition = this.position;
+    }
+  }
+  unSetShiftKey(): void {
+
+    this.isShift = false;
+    this.AnchorKeyPosition = undefined;
+  }
+
   get position(): Position {
     return this.cellManipulation!.position!;
   }
   set position(pos: Position) {
     if (!this.isPositionValid(pos)) {
       return;
+    }
+
+    // Zestöre Auswahl Array
+    if (!(this.isCtrl || this.isShift)) {
+      this.destroySelection();
     }
 
     const oldPosition: Position | null | undefined = this.cellManipulation!.position;
@@ -905,6 +953,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
       this.tooltip!.innerHTML = value;
       this.tooltip!.style.top = event.clientY + 'px';
       this.tooltip!.style.left = event.clientX + 'px';
+      this.tooltip!.style.display = 'block';
       this.fadeInToolTip();
     }
   }
@@ -978,14 +1027,21 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     this.tooltip!.style.opacity = '0';
     this.tooltip!.style.display = 'none';
     this.tooltip!.innerHTML = '';
-    this.tooltip!.style.top = '-9000px';
-    this.tooltip!.style.left = '-9000px';
+    this.tooltip!.style.display = 'none';
   }
   /* #endregion ToolTips */
 
   /* #region context menu */
 
-  showContextMenu(event: MouseEvent) {
+  showMenu(): void {
+    this.renderer.setStyle(this.contextMenu!, 'top', this.contextMenuPosition.y);
+    this.renderer.setStyle(this.contextMenu!, 'left', this.contextMenuPosition.x);
+    this.renderer.setStyle(this.contextMenu!, 'display', 'block');
+    this.renderer.setStyle(this.contextMenu!, ' visibility', 'visible');
+
+  }
+
+  showContextMenu(event: MouseEvent): void {
     this.clearMenus();
 
     const pos: Position = this.calcCorrectCoordinate(event);
@@ -996,28 +1052,49 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.subMenus = this.gridCellContextMenu!.createContextMenu(pos);
-    this.contextMenuPosition.x = event.clientX + 'px';
-    this.contextMenuPosition.y = event.clientY + 'px';
-    // this.contextMenu.menuData = this.subMenus;
+    if (this.subMenus.length > 0) {
 
-    // this.contextMenu.openMenu();
+      this.contextMenuPosition.x = event.clientX + 'px';
+      this.contextMenuPosition.y = event.clientY + 'px';
+
+      this.showMenu();
+
+      setTimeout(() => {
+        this.isContextMenu = true;
+      }, 200);
+    }
+
   }
-  onContextMenuAction(event: ContextMenu) {
-    switch (event.id) {
-      case MenuIDEnum.emCopy: {
-        this.cellManipulation!.copy();
-        break;
-      }
-      case MenuIDEnum.emCut: {
-        break;
-      }
-      case MenuIDEnum.emPaste: {
-        break;
+
+  onContextMenuAction(value: ContextMenu): void {
+
+    if(value.isEnabled){
+      this.removeMenu();
+      switch (value.id) {
+        case MenuIDEnum.emCopy: {
+          this.cellManipulation!.copy();
+          break;
+        }
+        case MenuIDEnum.emCut: {
+          break;
+        }
+        case MenuIDEnum.emPaste: {
+          break;
+        }
       }
     }
   }
 
-  clearMenus() {
+  clearMenus(): void {
+    this.isContextMenu = false;
+    this.renderer.setStyle(this.contextMenu!, 'display', 'none');
+    this.renderer.setStyle(this.contextMenu!, ' visibility', 'hidden');
     this.subMenus = [];
+  }
+
+  removeMenu(): void {
+    if (this.isContextMenu) {
+      this.clearMenus();
+    }
   }
 }

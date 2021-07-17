@@ -33,7 +33,6 @@ export interface IGridCell {
 
 }
 
-
 export class GridCell implements IGridCell {
 
   mainText = '';

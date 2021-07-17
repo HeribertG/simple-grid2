@@ -27,7 +27,7 @@ export class CreateCell {
         const tempCanvas: HTMLCanvasElement = document.createElement('canvas');
         const ctx: CanvasRenderingContext2D | null = tempCanvas.getContext('2d');
         ctx!.imageSmoothingQuality = 'high';
-        MDraw.setAntiAliasing(ctx!);
+        // MDraw.setAntiAliasing(ctx!);
         MDraw.createHiDPICanvas(ctx!);
 
         tempCanvas.width = width;

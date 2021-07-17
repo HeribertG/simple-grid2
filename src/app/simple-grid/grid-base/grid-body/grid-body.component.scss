@@ -20,45 +20,71 @@
   image-rendering: -webkit-crisp-edges;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  user-zoom: false;
+  user-zoom: fixed;
   background-color: $gridBackgroundColor;
 }
 
 .div-tooltip {
   opacity: 0;
   position: fixed;
-  top: -9000px;
-  left: -9000px;
   border-radius: 4px;
-  background-color:$tooltipBackgroundColor;
+  background-color: $tooltipBackgroundColor;
   padding: 5px 10px;
   margin: 20px;
   border: $tooltipBorder;
   z-index: 99999;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, .5);
   font-size: 12px;
-}
-
-.mat-menu {
   visibility: hidden;
+}
+
+.div-context-menu {
+  z-index: 88888;
+  width: auto;
+  height: auto;
   position: fixed;
-
 }
 
-::ng-deep .mat-menu-content {
-  padding-top: 0px !important;
-  padding-bottom: 0px !important;
+
+
+.menu-item {
+  color: black;
+  padding: 10px 40px 10px 20px;
+  cursor: pointer;
+ 
+}
+.menu-item-disabled {
+  color: gray;
+  padding: 10px 40px 10px 20px; 
 }
 
-.mat-menu-item {
-  line-height: 35px;
-  height: 35px;
 
+.menu {
+  padding:3px;
+  background: white;
+  font-family: Arial;
+  font-size: 12px;
+  font-style: normal;
+  border-radius: 5px;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, .5);
 }
 
-canvas{
+.menu-item:hover {
+  background: $focusBorderColor;
+  color: white;
+}
+
+.menu-item-disabled:hover {
+  background: $focusBorderColorDisable !important;
+  color: white;
+}
+
+
+
+canvas {
   zoom: 100%;
   max-zoom: 100%;
   min-zoom: 100%;
-  scale: 1;
+  transform: scale(1.0);
+  user-zoom: fixed;
 }

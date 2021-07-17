@@ -31,7 +31,7 @@ export class GridCellContextMenu {
   
       this.contextMenus.push(new ContextMenu(MenuIDEnum.emCopy, 'Kopieren', true));
       this.contextMenus.push(new ContextMenu(MenuIDEnum.emCut, 'Ausschneiden', false));
-      this.contextMenus.push(new ContextMenu(MenuIDEnum.emPaste, 'Einfügen', false));
+      this.contextMenus.push(new ContextMenu(MenuIDEnum.emPaste, 'Einfügen', true));
     }
   
     createEmptyCellMenu() {}

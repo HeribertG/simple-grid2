@@ -64,8 +64,8 @@ export class GridSetting {
   headerBackGroundColor = '#FFFFFF';
   headerForeGroundColor = '#4d4d4d';
 
-  focusBorderColor = '#1Ethis._cellWidthFF';
-
+  focusBorderColor = '#1e90ff';
+  focusBorderColorDisabled = '#CCD1D1';
 
   clipboardMode: ClipboardModeEnum = ClipboardModeEnum.All;
   // tslint:disable-next-line:variable-name

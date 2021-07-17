@@ -16,17 +16,6 @@ $scrollbar-vertical: 20px;
   width: 100vw;
 }
 
-// .header {
-//   background-color: deepskyblue;
-//   height: $header_height;
-// }
-
-// .header-box {
-//   background-color: grey;
-//   width: calc(100vw - #{$scrollbar-vertical} );
-//   height: $header_height;
-// }
-
 .grid-body {
   width: calc(100vw - #{$scrollbar-vertical} );
   height:100%;

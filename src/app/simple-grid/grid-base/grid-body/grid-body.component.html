@@ -1,10 +1,10 @@
-
-
-
-
-
-
-
-<canvas klacksCellEvents id="gridCanvas" class="box-grid" ></canvas>
+<canvas klacksCellEvents id="gridCanvas" class="box-grid"></canvas>
 <div id="tooltip" class="div-tooltip"></div>
 
+<div id="contextMenu" class="div-context-menu" >
+  <div class="menu" *ngIf="subMenus && subMenus.length>0">
+    <div class="menu-item" [ngClass]="{'menu-item-disabled': !subMenu.isEnabled}" *ngFor="let subMenu of  subMenus" (click)="onContextMenuAction(subMenu)" >
+     {{subMenu.name}}
+    </div>
+  </div>
+</div>

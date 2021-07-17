@@ -3,7 +3,7 @@ import {
   HostListener,
   ViewContainerRef,
   NgZone,
-  } from '@angular/core';
+} from '@angular/core';
 
 
 import { Position } from '../../gridClasses/position';
@@ -21,25 +21,27 @@ export class CellEventsDirective {
   private scrollByKey = false;
   private isDrawing = false;
   private hasCollection = false;
-  private lastZoom=0;
+  private lastZoom = 0;
 
   constructor(
     private zone: NgZone,
-    private gridBody: GridBodyComponent ,
+    private gridBody: GridBodyComponent,
     public viewContainerRef: ViewContainerRef,
-   
-  ) {}
 
-  @HostListener('mouseenter', ['$event']) onMouseEnter(event: MouseEvent) {}
+  ) { }
+
+  @HostListener('mouseenter', ['$event']) onMouseEnter(event: MouseEvent) { }
 
   @HostListener('mouseleave', ['$event']) onMouseLeave(event: MouseEvent) {
     this.gridBody.destroyToolTip();
-    
+    this.gridBody.removeMenu();
+
   }
 
   @HostListener('mousewheel', ['$event']) onMouseWheel(
     event: WheelEvent
   ): void {
+    this.gridBody.clearMenus();
     const moveY: number = event.deltaY === 0 ? 0 : event.deltaY > 0 ? 1 : -1;
     const moveX: number = event.deltaX === 0 ? 0 : event.deltaX > 0 ? 1 : -1;
 
@@ -52,10 +54,18 @@ export class CellEventsDirective {
     } else if (event.buttons === 2) {
       this.respondToRightMouseDown(event);
     }
+
+    this.stopEvent(event)
+  }
+
+  @HostListener('click', ['$event']) onMouseClick(event: MouseEvent): void {
+    this.gridBody.removeMenu();
   }
 
   @HostListener('mouseup', ['$event']) onMouseUp(event: MouseEvent): void {
     this.isDrawing = false;
+
+    this.stopEvent(event)
 
     if (this.hasCollection) {
       const pos: Position = this.gridBody.calcCorrectCoordinate(event);
@@ -67,6 +77,8 @@ export class CellEventsDirective {
     }
 
     this.hasCollection = false;
+
+
   }
 
   @HostListener('mousemove', ['$event']) onMouseMove(event: MouseEvent): void {
@@ -95,6 +107,8 @@ export class CellEventsDirective {
       //   }
       // }
       this.gridBody.hideToolTip();
+      this.gridBody.removeMenu();
+
     }
   }
 
@@ -102,14 +116,18 @@ export class CellEventsDirective {
     event: KeyboardEvent
   ): void {
     this.keyDown = true;
+    this.gridBody.removeMenu();
 
-    const isShift: boolean = event.shiftKey;
-    const isCtrl = event.ctrlKey;
+
+    if (event.shiftKey) {
+      this.gridBody.setShiftKey();
+    }
+    this.gridBody.isCtrl = event.ctrlKey;
 
     if (event.key === 'ArrowDown') {
       if (event.repeat) {
         if (this.gridBody.isBusy) {
-          event.preventDefault();
+          this.stopEvent(event)
           return;
         }
       }
@@ -130,7 +148,12 @@ export class CellEventsDirective {
             this.gridBody.moveGrid(0, 1);
           }
         }
-        event.preventDefault();
+
+        if (this.gridBody.isShift) {
+          if (this.gridBody.AnchorKeyPosition) { this.gridBody.drawSelectionDynamically(this.gridBody.AnchorKeyPosition as Position); }
+        }
+
+        this.stopEvent(event)
         return;
       }
     }
@@ -138,7 +161,7 @@ export class CellEventsDirective {
     if (event.key === 'PageDown') {
       if (event.repeat) {
         if (this.gridBody.isBusy) {
-          event.preventDefault();
+          this.stopEvent(event)
           return;
         }
       }
@@ -164,14 +187,14 @@ export class CellEventsDirective {
       );
 
       this.gridBody.drawGrid();
-      event.preventDefault();
+      this.stopEvent(event)
       return;
     }
 
     if (event.key === 'ArrowUp') {
       if (event.repeat) {
         if (this.gridBody.isBusy) {
-          event.preventDefault();
+          this.stopEvent(event)
           return;
         }
       }
@@ -193,7 +216,12 @@ export class CellEventsDirective {
             this.gridBody.moveGrid(0, -1);
           }
         }
-        event.preventDefault();
+
+        if (this.gridBody.isShift) {
+          if (this.gridBody.AnchorKeyPosition) { this.gridBody.drawSelectionDynamically(this.gridBody.AnchorKeyPosition as Position); }
+        }
+
+        this.stopEvent(event)
         return;
       }
     }
@@ -202,7 +230,7 @@ export class CellEventsDirective {
 
       if (event.repeat) {
         if (this.gridBody.isBusy) {
-          event.preventDefault();
+          this.stopEvent(event)
           return;
         }
       }
@@ -226,7 +254,7 @@ export class CellEventsDirective {
       );
 
       this.gridBody.drawGrid();
-      event.preventDefault();
+      this.stopEvent(event)
       return;
     }
 
@@ -235,7 +263,7 @@ export class CellEventsDirective {
       if (event.repeat) {
         // const isOkToWrite :boolean = event
         if (this.gridBody.isBusy) {
-          event.preventDefault();
+          this.stopEvent(event)
           return;
         }
       }
@@ -252,7 +280,7 @@ export class CellEventsDirective {
       );
 
       this.gridBody.drawGrid();
-      event.preventDefault();
+      this.stopEvent(event);
       return;
     }
 
@@ -260,7 +288,7 @@ export class CellEventsDirective {
 
       if (event.repeat) {
         if (this.gridBody.isBusy) {
-          event.preventDefault();
+          this.stopEvent(event);
           return;
         }
       }
@@ -273,14 +301,14 @@ export class CellEventsDirective {
       );
 
       this.gridBody.drawGrid();
-      event.preventDefault();
+      this.stopEvent(event);
       return;
     }
 
     if (event.key === 'ArrowLeft' || event.key === 'Backspace') {
       if (event.repeat) {
         if (this.gridBody.isBusy) {
-          event.preventDefault();
+          this.stopEvent(event);
           return;
         }
       }
@@ -296,7 +324,12 @@ export class CellEventsDirective {
           this.gridBody.moveGrid(-1, 0);
         }
       }
-      event.preventDefault();
+
+      if (this.gridBody.isShift) {
+        if (this.gridBody.AnchorKeyPosition) { this.gridBody.drawSelectionDynamically(this.gridBody.AnchorKeyPosition as Position); }
+      }
+
+      this.stopEvent(event);
       return;
     }
 
@@ -304,7 +337,7 @@ export class CellEventsDirective {
 
       if (event.repeat) {
         if (this.gridBody.isBusy) {
-          event.preventDefault();
+          this.stopEvent(event);
           return;
         }
       }
@@ -324,7 +357,12 @@ export class CellEventsDirective {
           this.gridBody.moveGrid(1, 0);
         }
       }
-      event.preventDefault();
+
+      if (this.gridBody.isShift) {
+        if (this.gridBody.AnchorKeyPosition) { this.gridBody.drawSelectionDynamically(this.gridBody.AnchorKeyPosition as Position); }
+      }
+
+      this.stopEvent(event);
       return;
     }
 
@@ -393,11 +431,15 @@ export class CellEventsDirective {
   ): void {
     this.keyDown = false;
     this.scrollByKey = false;
+    if (!event.shiftKey) {
+      this.gridBody.unSetShiftKey();
+    }
+    this.gridBody.isCtrl = false;
   }
 
   @HostListener('window:keypress', ['$event']) onKeyPress(
     event: KeyboardEvent
-  ): void {}
+  ): void { }
 
   @HostListener('window:focus', ['$event']) onfocus(event: FocusEvent): void {
     this.gridBody.isFocused = true;
@@ -413,6 +455,10 @@ export class CellEventsDirective {
       this.gridBody.refreshCell(this.gridBody.position);
       this.gridBody.drawSelectedCell();
     }
+  }
+
+  @HostListener('window:contextmenu', ['$event']) onContextMenu(event: any): void {
+    this.stopEvent(event);
   }
 
   scrollOnPoint(pos: Position) {
@@ -456,5 +502,14 @@ export class CellEventsDirective {
 
   private respondToRightMouseDown(event: MouseEvent): void {
     this.gridBody.showContextMenu(event);
+  }
+
+  private stopEvent(event: any): void {
+    if (event.preventDefault)
+      event.preventDefault();
+    if (event.stopPropagation)
+      event.stopPropagation();
+    if (event.cancelBubble)
+      event.cancelBubble = true;
   }
 }
