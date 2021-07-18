@@ -1,10 +1,29 @@
 <canvas klacksCellEvents id="gridCanvas" class="box-grid"></canvas>
 <div id="tooltip" class="div-tooltip"></div>
+<div class="edit-container">
+  <textarea class="edit-text" name="edit-text" id="edit-text"  ></textarea>
+</div>
 
-<div id="contextMenu" class="div-context-menu" >
+<div id="contextMenu" class="div-context-menu">
   <div class="menu" *ngIf="subMenus && subMenus.length>0">
-    <div class="menu-item" [ngClass]="{'menu-item-disabled': !subMenu.isEnabled}" *ngFor="let subMenu of  subMenus" (click)="onContextMenuAction(subMenu)" >
-     {{subMenu.name}}
+    <div [ngClass]="{
+      'menu-item': subMenu.isEnabled && !subMenu.isSeparation,
+      'menu-item-disabled': !subMenu.isEnabled && !subMenu.isSeparation,
+      '.subMenu-separation': subMenu.isSeparation }" *ngFor="let subMenu of  subMenus"
+      (click)="onContextMenuClick(subMenu)" (mouseenter)="onContextMenuEnter(subMenu)" (mouseleave)="onContextMenuLeave(subMenu)">
+      <ng-container *ngIf="!subMenu.isSeparation">
+        <div>{{subMenu.name}}</div>
+        <span class="filler"></span>
+        <div class="subMenu-key">{{subMenu.key}}</div>
+        <div class="subMenu-arrow"  >
+          <span *ngIf="subMenu.hasChildren">►</span>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="subMenu.isSeparation">
+        <div class="separation">
+          <hr size="1" width="90%" color="grey">
+        </div>
+      </ng-container>
     </div>
   </div>
 </div>

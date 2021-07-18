@@ -1,3 +1,4 @@
+
 import { AfterViewInit, Component, EventEmitter, Input, NgZone, OnDestroy, OnInit, Output, Renderer2 } from '@angular/core';
 import { MDraw } from '../../helpers/draw-helper';
 import { MenuIDEnum } from '../../helpers/enums/cell-settings.enum';
@@ -36,12 +37,12 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   isShift = false;
   isCtrl = false;
   AnchorKeyPosition: Position | undefined;
-  
-  
+
+
   resizeWindow: (() => void) | undefined;
   visibilitychangeWindow: (() => void) | undefined;
-   
-  
+
+
   private createCell: CreateCell | undefined | null;
   private createHeader: CreateHeader | undefined | null;
   private ctx: CanvasRenderingContext2D | undefined | null;
@@ -53,7 +54,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   private tooltip: HTMLDivElement | undefined | null;
   private contextMenu: HTMLDivElement | undefined | null;
   private isContextMenu = false;
-  private contextMenuPosition = { x: '0px', y: '0px' };
+  private contextMenuPosition = new Map<0, { x: string, y: string }>();
 
 
   constructor(
@@ -100,7 +101,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.cellManipulation = new GridCellManipulation(this.gridData!.gridSetting!);
+    this.cellManipulation = new GridCellManipulation(this.gridData!);
     this.createCell = new CreateCell(this.gridData!);
     this.createHeader = new CreateHeader(this.gridData!);
     this.init();
@@ -1026,10 +1027,43 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   /* #region context menu */
 
   showMenu(): void {
-    this.renderer.setStyle(this.contextMenu!, 'top', this.contextMenuPosition.y);
-    this.renderer.setStyle(this.contextMenu!, 'left', this.contextMenuPosition.x);
+
+    this.renderer.setStyle(this.contextMenu!, 'top', this.contextMenuPosition.get(0)!.y);
+    this.renderer.setStyle(this.contextMenu!, 'left', this.contextMenuPosition.get(0)!.x);
     this.renderer.setStyle(this.contextMenu!, 'display', 'block');
     this.renderer.setStyle(this.contextMenu!, ' visibility', 'visible');
+    setTimeout(() => {
+      this.replaceMenu(0);
+    }, 20);
+
+  }
+
+  replaceMenu(deep: number) {
+    let mustMove = false;
+    const menuBottom = this.contextMenu!.offsetTop + this.contextMenu!.clientHeight;
+    const menuRight = this.contextMenu!.offsetLeft + this.contextMenu!.clientWidth;
+    const diffY = this.canvas!.clientHeight - menuBottom;
+    const diffX = this.canvas!.clientWidth - menuRight;
+
+    const pos = this.contextMenuPosition.get(0)!;
+    if (diffY < 0) {
+      mustMove = true;
+      pos.y = this.contextMenu!.offsetTop - this.contextMenu!.clientHeight + 'px';
+    }
+    if (diffX < 0) {
+      mustMove = true;
+      pos.x = this.contextMenu!.offsetLeft - this.contextMenu!.clientWidth + 'px';
+    }
+
+
+    if (mustMove) {
+
+      this.contextMenuPosition.delete(0);
+      this.contextMenuPosition.set(0, pos);
+      this.renderer.setStyle(this.contextMenu!, 'top', pos.y);
+      this.renderer.setStyle(this.contextMenu!, 'left', pos.x);
+    }
+
 
   }
 
@@ -1046,8 +1080,11 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     this.subMenus = this.gridCellContextMenu!.createContextMenu(pos);
     if (this.subMenus.length > 0) {
 
-      this.contextMenuPosition.x = event.clientX + 'px';
-      this.contextMenuPosition.y = event.clientY + 'px';
+      const pos = { x: '0px', y: '0py' };
+      pos.x = event.clientX + 'px';
+      pos.y = event.clientY + 'px';
+
+      this.contextMenuPosition.set(0, pos);
 
       this.showMenu();
 
@@ -1058,11 +1095,24 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  onContextMenuAction(value: ContextMenu): void {
+  onContextMenuEnter(value: ContextMenu): void {
+
+    if (value.hasChildren) {
+      console.log(true)
+    }
+  }
+  onContextMenuLeave(value: ContextMenu): void {
+
+    if (value.hasChildren) {
+      console.log(false)
+    }
+  }
+
+  onContextMenuClick(value: ContextMenu): void {
 
     this.contextMenuActionEvent.emit(value);
-    
-    if(value.isEnabled){
+
+    if (value.isEnabled) {
       this.removeMenu();
       switch (value.id) {
         case MenuIDEnum.emCopy: {
@@ -1091,4 +1141,11 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
       this.clearMenus();
     }
   }
+
+  /* #endregion context menu */
+
+  /* #region edit-cell */
+
+
+  /* #endregion edit-cell */
 }
