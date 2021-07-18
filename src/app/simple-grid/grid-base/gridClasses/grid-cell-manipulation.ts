@@ -1,18 +1,20 @@
 import { ClipboardModeEnum } from "../../helpers/enums/grid-settings.enum";
+import { GridData } from "./data-grid";
 import { GridSetting } from "./grid-setting";
 import { Position, PositionCollection } from "./position";
 
 export class GridCellManipulation {
     public positionCollection: PositionCollection = new PositionCollection();
     public position: Position | null | undefined;
-    gridSetting: GridSetting | undefined | null;
+    private gridData: GridData | undefined | null;
 
-    constructor(gridSetting: GridSetting) {
-        this.gridSetting = gridSetting;
+    constructor(gridData: GridData) {
+        this.gridData = gridData;
     }
 
     destroy(): void {
-        this.gridSetting =null;
+        this.gridData!.destroy
+        this.gridData =null;
     }
     
     isPositionInSelection(pos: Position): boolean {
@@ -35,8 +37,8 @@ export class GridCellManipulation {
 
     copy(): void  {
         const copyEnabled: boolean =
-            this.gridSetting!.clipboardMode === ClipboardModeEnum.All ||
-            this.gridSetting!.clipboardMode === ClipboardModeEnum.Copy;
+            this.gridData!.gridSetting!.clipboardMode === ClipboardModeEnum.All ||
+            this.gridData!.gridSetting!.clipboardMode === ClipboardModeEnum.Copy;
 
         if (!copyEnabled) {
             return;
@@ -44,10 +46,10 @@ export class GridCellManipulation {
 
         if (this.positionCollection.count() <= 1) {
             if (!this.position!.isEmpty()) {
-                const data: string = ''; // = this.gridData.getItemMainText(
-                //   this.Position.row,
-                //   this.Position.column
-                // );
+                const data: string  = this.gridData!.getCellMainText(
+                  this.position!.row,
+                  this.position!.column
+                );
                 this.setClipboardData(data);
             }
         } else {
@@ -93,7 +95,7 @@ export class GridCellManipulation {
         for (let row = minRow; row <= maxRow; row++) {
             for (let col = minCol; col <= maxCol; col++) {
                 if (this.positionCollection.contains(new Position(row, col))) {
-                    //dataString += this.gridData.getItemMainText(row, col);
+                    dataString += this.gridData!.getCellMainText(row, col);
                     if (col < maxCol) {
                         dataString += '\t';
                     }

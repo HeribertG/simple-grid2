@@ -164,9 +164,13 @@ export class GridData {
   }
 
   private setCellText(gridCell: GridCell, row: number, col: number): void {
-    gridCell.mainText = 'Zelle ' + row.toString() + ' / ' + col.toString();
+    gridCell.mainText = this.getCellMainText(row, col);
     gridCell.secondSubText = row.toString() + ' / ' + col.toString();
   }
 
+
+  getCellMainText(row: number, col: number):string{
+    return 'Zelle ' + row.toString() + ' / ' + col.toString();;
+  }
 
 }

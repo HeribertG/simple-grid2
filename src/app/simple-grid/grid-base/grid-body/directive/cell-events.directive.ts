@@ -26,8 +26,6 @@ export class CellEventsDirective {
   constructor(
     private zone: NgZone,
     private gridBody: GridBodyComponent,
-    public viewContainerRef: ViewContainerRef,
-
   ) { }
 
   @HostListener('mouseenter', ['$event']) onMouseEnter(event: MouseEvent) { }
