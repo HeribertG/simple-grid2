@@ -1,0 +1,148 @@
+<div id="contextMenu" class="div-context-menu">
+  <div class="menu" *ngIf="menus(0).length>0">
+    <div [ngClass]="{
+        'menu-item': subMenu.isEnabled && !subMenu.isSeparation,
+        'menu-item-disabled': !subMenu.isEnabled && !subMenu.isSeparation,
+        '.subMenu-separation': subMenu.isSeparation }" *ngFor="let subMenu of  menus(0)"
+      (click)="onContextMenuClick(subMenu)" (mouseenter)="onContextMenuEnter(subMenu,0,$event)"
+      (mouseleave)="onContextMenuLeave(subMenu,0)">
+      <ng-container *ngIf="!subMenu.isSeparation">
+        <div>{{subMenu.name}}</div>
+        <span class="filler"></span>
+        <div class="subMenu-key">{{subMenu.key}}</div>
+        <div class="subMenu-arrow">
+          <span *ngIf="subMenu.hasChildren">►</span>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="subMenu.isSeparation">
+        <div class="separation">
+          <hr size="1" width="90%" color="grey">
+        </div>
+      </ng-container>
+    </div>
+</div>
+
+<div id="contextMenu1" class="div-context-menu">
+  <div class="menu" *ngIf="menus(1).length>0">
+    <div [ngClass]="{
+        'menu-item': subMenu1.isEnabled && !subMenu1.isSeparation,
+        'menu-item-disabled': !subMenu1.isEnabled && !subMenu1.isSeparation,
+        '.subMenu-separation': subMenu1.isSeparation }" *ngFor="let subMenu1 of  menus(1)"
+      (click)="onContextMenuClick(subMenu1)" (mouseenter)="onContextMenuEnter(subMenu1,1,$event)"
+      (mouseleave)="onContextMenuLeave(subMenu1,1)">
+      <ng-container *ngIf="!subMenu1.isSeparation">
+        <div>{{subMenu1.name}}</div>
+        <span class="filler"></span>
+        <div class="subMenu-key">{{subMenu1.key}}</div>
+        <div class="subMenu-arrow">
+          <span *ngIf="subMenu1.hasChildren">►</span>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="subMenu1.isSeparation">
+        <div class="separation">
+          <hr size="1" width="90%" color="grey">
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>
+
+<div id="contextMenu2" class="div-context-menu">
+  <div class="menu" *ngIf="menus(2).length>0">
+    <div [ngClass]="{
+        'menu-item': subMenu2.isEnabled && !subMenu2.isSeparation,
+        'menu-item-disabled': !subMenu2.isEnabled && !subMenu2.isSeparation,
+        '.subMenu-separation': subMenu2.isSeparation }" *ngFor="let subMenu2 of  menus(2)"
+      (click)="onContextMenuClick(subMenu2)" (mouseenter)="onContextMenuEnter(subMenu2,2,$event)"
+      (mouseleave)="onContextMenuLeave(subMenu2,2)">
+      <ng-container *ngIf="!subMenu2.isSeparation">
+        <div>{{subMenu2.name}}</div>
+        <span class="filler"></span>
+        <div class="subMenu-key">{{subMenu2.key}}</div>
+        <div class="subMenu-arrow">
+          <span *ngIf="subMenu2.hasChildren">►</span>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="subMenu2.isSeparation">
+        <div class="separation">
+          <hr size="1" width="90%" color="grey">
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>
+
+<div id="contextMenu3" class="div-context-menu">
+  <div class="menu" *ngIf="menus(3).length>0">
+    <div [ngClass]="{
+        'menu-item': subMenu3.isEnabled && !subMenu3.isSeparation,
+        'menu-item-disabled': !subMenu3.isEnabled && !subMenu3.isSeparation,
+        '.subMenu-separation': subMenu3.isSeparation }" *ngFor="let subMenu3 of  menus(3)"
+      (click)="onContextMenuClick(subMenu3)" (mouseenter)="onContextMenuEnter(subMenu3,3,$event)"
+      (mouseleave)="onContextMenuLeave(subMenu3,3)">
+      <ng-container *ngIf="!subMenu3.isSeparation">
+        <div>{{subMenu3.name}}</div>
+        <span class="filler"></span>
+        <div class="subMenu-key">{{subMenu3.key}}</div>
+        <div class="subMenu-arrow">
+          <span *ngIf="subMenu3.hasChildren">►</span>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="subMenu3.isSeparation">
+        <div class="separation">
+          <hr size="1" width="90%" color="grey">
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>
+
+<div id="contextMenu4" class="div-context-menu">
+  <div class="menu" *ngIf="menus(4).length>0">
+    <div [ngClass]="{
+        'menu-item': subMenu4.isEnabled && !subMenu4.isSeparation,
+        'menu-item-disabled': !subMenu4.isEnabled && !subMenu4.isSeparation,
+        '.subMenu-separation': subMenu4.isSeparation }" *ngFor="let subMenu4 of  menus(4)"
+      (click)="onContextMenuClick(subMenu4)" (mouseenter)="onContextMenuEnter(subMenu4,4,$event)"
+      (mouseleave)="onContextMenuLeave(subMenu4,4)">
+      <ng-container *ngIf="!subMenu4.isSeparation">
+        <div>{{subMenu4.name}}</div>
+        <span class="filler"></span>
+        <div class="subMenu-key">{{subMenu4.key}}</div>
+        <div class="subMenu-arrow">
+          <span *ngIf="subMenu4.hasChildren">►</span>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="subMenu4.isSeparation">
+        <div class="separation">
+          <hr size="1" width="90%" color="grey">
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>
+
+<div id="contextMenu5" class="div-context-menu">
+  <div class="menu" *ngIf="menus(5).length>0">
+    <div [ngClass]="{
+        'menu-item': subMenu5.isEnabled && !subMenu5.isSeparation,
+        'menu-item-disabled': !subMenu5.isEnabled && !subMenu5.isSeparation,
+        '.subMenu-separation': subMenu5.isSeparation }" *ngFor="let subMenu5 of  menus(5)"
+      (click)="onContextMenuClick(subMenu5)" (mouseenter)="onContextMenuEnter(subMenu5,5,$event)"
+      (mouseleave)="onContextMenuLeave(subMenu5,5)">
+      <ng-container *ngIf="!subMenu5.isSeparation">
+        <div>{{subMenu5.name}}</div>
+        <span class="filler"></span>
+        <div class="subMenu-key">{{subMenu5.key}}</div>
+        <div class="subMenu-arrow">
+          <span *ngIf="subMenu5.hasChildren">►</span>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="subMenu5.isSeparation">
+        <div class="separation">
+          <hr size="1" width="90%" color="grey">
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>

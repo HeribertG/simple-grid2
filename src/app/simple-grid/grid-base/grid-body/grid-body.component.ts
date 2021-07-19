@@ -1,12 +1,11 @@
 
 import { AfterViewInit, Component, EventEmitter, Input, NgZone, OnDestroy, OnInit, Output, Renderer2 } from '@angular/core';
 import { MDraw } from '../../helpers/draw-helper';
-import { MenuIDEnum } from '../../helpers/enums/cell-settings.enum';
-import { ContextMenu } from '../gridClasses/context-menu';
+import { ContextMenu } from '../../simple-context-menu/menuClasses/context-menu';
 import { CreateCell } from '../gridClasses/create-cell';
 import { CreateHeader } from '../gridClasses/create-header';
 import { GridData } from '../gridClasses/data-grid';
-import { GridCellContextMenu } from '../gridClasses/grid-cell-context-menu';
+import { GridCellContextMenu } from '../../simple-context-menu/menuClasses/grid-cell-context-menu';
 import { GridCellManipulation } from '../gridClasses/grid-cell-manipulation';
 
 import { Position } from '../gridClasses/position';
@@ -14,6 +13,7 @@ import { ScrollGrid } from '../gridClasses/scroll-grid';
 
 import { HScrollbarComponent } from '../h-scrollbar/h-scrollbar.component';
 import { VScrollbarComponent } from '../v-scrollbar/v-scrollbar.component';
+import { SimpleContextMenuComponent } from '../../simple-context-menu/simple-context-menu.component';
 
 
 @Component({
@@ -28,12 +28,12 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() hScrollbar: HScrollbarComponent | undefined | null;
   @Input() scrollGrid: ScrollGrid | undefined | null;
   @Input() gridCellContextMenu: GridCellContextMenu | undefined | null;
+  @Input() simpleContextMenu: SimpleContextMenuComponent | undefined | null;
   @Output() contextMenuActionEvent = new EventEmitter<ContextMenu>();
 
   cellManipulation: GridCellManipulation | undefined | null;
   isFocused = true;
   isBusy = false;
-  subMenus: ContextMenu[] | undefined | null;
   isShift = false;
   isCtrl = false;
   AnchorKeyPosition: Position | undefined;
@@ -52,9 +52,8 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   private headerCtx: CanvasRenderingContext2D | undefined | null;
   private headerCanvas: HTMLCanvasElement | undefined | null;
   private tooltip: HTMLDivElement | undefined | null;
-  private contextMenu: HTMLDivElement | undefined | null;
-  private isContextMenu = false;
-  private contextMenuPosition = new Map<0, { x: string, y: string }>();
+  private editCell: HTMLDivElement | undefined | null;
+  
 
 
   constructor(
@@ -97,7 +96,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     this.headerCtx.imageSmoothingQuality = 'high';
 
     this.tooltip = document.getElementById('tooltip') as HTMLDivElement;
-    this.contextMenu = document.getElementById('contextMenu') as HTMLDivElement;
+    this.editCell = document.getElementById('edit-cell') as HTMLDivElement;
   }
 
   ngAfterViewInit(): void {
@@ -128,8 +127,8 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     this.renderCanvas = undefined;
     this.headerCanvas = undefined;
     this.tooltip = undefined;
-    this.contextMenu = undefined;
-
+    this.editCell  = undefined;
+    
   }
 
   init(): void {
@@ -1024,128 +1023,25 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   /* #endregion ToolTips */
 
-  /* #region context menu */
-
-  showMenu(): void {
-
-    this.renderer.setStyle(this.contextMenu!, 'top', this.contextMenuPosition.get(0)!.y);
-    this.renderer.setStyle(this.contextMenu!, 'left', this.contextMenuPosition.get(0)!.x);
-    this.renderer.setStyle(this.contextMenu!, 'display', 'block');
-    this.renderer.setStyle(this.contextMenu!, ' visibility', 'visible');
-    setTimeout(() => {
-      this.replaceMenu(0);
-    }, 20);
-
-  }
-
-  replaceMenu(deep: number) {
-    let mustMove = false;
-    const menuBottom = this.contextMenu!.offsetTop + this.contextMenu!.clientHeight;
-    const menuRight = this.contextMenu!.offsetLeft + this.contextMenu!.clientWidth;
-    const diffY = this.canvas!.clientHeight - menuBottom;
-    const diffX = this.canvas!.clientWidth - menuRight;
-
-    const pos = this.contextMenuPosition.get(0)!;
-    if (diffY < 0) {
-      mustMove = true;
-      pos.y = this.contextMenu!.offsetTop - this.contextMenu!.clientHeight + 'px';
-    }
-    if (diffX < 0) {
-      mustMove = true;
-      pos.x = this.contextMenu!.offsetLeft - this.contextMenu!.clientWidth + 'px';
-    }
-
-
-    if (mustMove) {
-
-      this.contextMenuPosition.delete(0);
-      this.contextMenuPosition.set(0, pos);
-      this.renderer.setStyle(this.contextMenu!, 'top', pos.y);
-      this.renderer.setStyle(this.contextMenu!, 'left', pos.x);
-    }
-
-
-  }
-
-  showContextMenu(event: MouseEvent): void {
-    this.clearMenus();
-
-    const pos: Position = this.calcCorrectCoordinate(event);
-
-    if (!this.cellManipulation!.isPositionInSelection(pos)) {
-      this.destroySelection();
-      this.position = pos;
-    }
-
-    this.subMenus = this.gridCellContextMenu!.createContextMenu(pos);
-    if (this.subMenus.length > 0) {
-
-      const pos = { x: '0px', y: '0py' };
-      pos.x = event.clientX + 'px';
-      pos.y = event.clientY + 'px';
-
-      this.contextMenuPosition.set(0, pos);
-
-      this.showMenu();
-
-      setTimeout(() => {
-        this.isContextMenu = true;
-      }, 200);
-    }
-
-  }
-
-  onContextMenuEnter(value: ContextMenu): void {
-
-    if (value.hasChildren) {
-      console.log(true)
-    }
-  }
-  onContextMenuLeave(value: ContextMenu): void {
-
-    if (value.hasChildren) {
-      console.log(false)
-    }
-  }
-
-  onContextMenuClick(value: ContextMenu): void {
-
-    this.contextMenuActionEvent.emit(value);
-
-    if (value.isEnabled) {
-      this.removeMenu();
-      switch (value.id) {
-        case MenuIDEnum.emCopy: {
-          this.cellManipulation!.copy();
-          break;
-        }
-        case MenuIDEnum.emCut: {
-          break;
-        }
-        case MenuIDEnum.emPaste: {
-          break;
-        }
-      }
-    }
-  }
-
-  clearMenus(): void {
-    this.isContextMenu = false;
-    this.renderer.setStyle(this.contextMenu!, 'display', 'none');
-    this.renderer.setStyle(this.contextMenu!, ' visibility', 'hidden');
-    this.subMenus = [];
-  }
-
-  removeMenu(): void {
-    if (this.isContextMenu) {
-      this.clearMenus();
-    }
-  }
-
-  /* #endregion context menu */
-
   /* #region edit-cell */
 
 
   /* #endregion edit-cell */
+
+  /* #region canvas-metrics */
+
+  get clientLeft():number{
+    return 0;
+  }
+  get clientTop():number{
+    return this.gridData!.gridSetting!.cellHeaderHeight;
+  }
+  get clientHeight():number{
+    return this.canvas!.clientHeight;
+  }
+
+  get clientWidth() :number{
+    return this.canvas!.clientWidth;
+  }
+  /* #endregion canvas-metrics */
 }

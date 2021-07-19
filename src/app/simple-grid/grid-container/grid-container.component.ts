@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { GridData } from '../grid-base/gridClasses/data-grid';
-import { GridCellContextMenu } from '../grid-base/gridClasses/grid-cell-context-menu';
+import { GridCellContextMenu } from '../simple-context-menu/menuClasses/grid-cell-context-menu';
 import { GridSetting } from '../grid-base/gridClasses/grid-setting';
 import { MergeCell } from '../grid-base/gridClasses/merge-cell';
 import { Position } from '../grid-base/gridClasses/position';

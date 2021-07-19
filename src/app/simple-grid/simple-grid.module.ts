@@ -6,6 +6,7 @@ import { HScrollbarComponent } from './grid-base/h-scrollbar/h-scrollbar.compone
 import { GridBodyComponent } from './grid-base/grid-body/grid-body.component';
 import { VScrollbarComponent } from './grid-base/v-scrollbar/v-scrollbar.component';
 import { CellEventsDirective } from './grid-base/grid-body/directive/cell-events.directive';
+import { SimpleContextMenuComponent } from './simple-context-menu/simple-context-menu.component';
 
 
 
@@ -16,6 +17,7 @@ import { CellEventsDirective } from './grid-base/grid-body/directive/cell-events
     VScrollbarComponent,
     GridBodyComponent,
     CellEventsDirective,
+    SimpleContextMenuComponent,
   ],
   imports: [
     CommonModule,
@@ -30,6 +32,7 @@ import { CellEventsDirective } from './grid-base/grid-body/directive/cell-events
     VScrollbarComponent,
     GridBodyComponent,
     CellEventsDirective,
+    SimpleContextMenuComponent,
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'de-CH' },

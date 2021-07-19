@@ -1,11 +1,9 @@
 import {
   Directive,
   HostListener,
-  ViewContainerRef,
   NgZone,
 } from '@angular/core';
-
-
+import { Rectangle } from 'src/app/simple-grid/helpers/geometry';
 import { Position } from '../../gridClasses/position';
 import { GridBodyComponent } from '../grid-body.component';
 
@@ -17,6 +15,9 @@ import { GridBodyComponent } from '../grid-body.component';
   selector: '[klacksCellEvents]'
 })
 export class CellEventsDirective {
+
+  
+  
   private keyDown = false;
   private scrollByKey = false;
   private isDrawing = false;
@@ -32,14 +33,18 @@ export class CellEventsDirective {
 
   @HostListener('mouseleave', ['$event']) onMouseLeave(event: MouseEvent) {
     this.gridBody.destroyToolTip();
-    this.gridBody.removeMenu();
 
+    const rect = new Rectangle(this.gridBody.clientLeft,this.gridBody.clientTop,this.gridBody.clientWidth ,this.gridBody.clientHeight);
+    if(!rect.pointInRect(event.clientX,event.clientY)){
+      this.gridBody.simpleContextMenu!.removeMenu();
+    }
+    
   }
 
   @HostListener('mousewheel', ['$event']) onMouseWheel(
     event: WheelEvent
   ): void {
-    this.gridBody.clearMenus();
+    this.gridBody.simpleContextMenu!.clearMenus();
     const moveY: number = event.deltaY === 0 ? 0 : event.deltaY > 0 ? 1 : -1;
     const moveX: number = event.deltaX === 0 ? 0 : event.deltaX > 0 ? 1 : -1;
 
@@ -57,7 +62,7 @@ export class CellEventsDirective {
   }
 
   @HostListener('click', ['$event']) onMouseClick(event: MouseEvent): void {
-    this.gridBody.removeMenu();
+    this.gridBody.simpleContextMenu!.removeMenu();
   }
 
   @HostListener('mouseup', ['$event']) onMouseUp(event: MouseEvent): void {
@@ -105,7 +110,7 @@ export class CellEventsDirective {
       //   }
       // }
       this.gridBody.hideToolTip();
-      this.gridBody.removeMenu();
+     //  this.gridBody.simpleContextMenu!.removeMenu();
 
     }
   }
@@ -114,7 +119,7 @@ export class CellEventsDirective {
     event: KeyboardEvent
   ): void {
     this.keyDown = true;
-    this.gridBody.removeMenu();
+    this.gridBody.simpleContextMenu!.removeMenu();
 
 
     if (event.shiftKey) {
@@ -499,7 +504,7 @@ export class CellEventsDirective {
   }
 
   private respondToRightMouseDown(event: MouseEvent): void {
-    this.gridBody.showContextMenu(event);
+    this.gridBody.simpleContextMenu!.showContextMenu(event);
   }
 
   private stopEvent(event: any): void {
