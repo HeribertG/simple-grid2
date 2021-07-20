@@ -7,6 +7,7 @@ import { GridBodyComponent } from './grid-base/grid-body/grid-body.component';
 import { VScrollbarComponent } from './grid-base/v-scrollbar/v-scrollbar.component';
 import { CellEventsDirective } from './grid-base/grid-body/directive/cell-events.directive';
 import { SimpleContextMenuComponent } from './simple-context-menu/simple-context-menu.component';
+import { ActiveCellComponent } from './grid-base/active-cell/active-cell.component';
 
 
 
@@ -18,6 +19,7 @@ import { SimpleContextMenuComponent } from './simple-context-menu/simple-context
     GridBodyComponent,
     CellEventsDirective,
     SimpleContextMenuComponent,
+    ActiveCellComponent,
   ],
   imports: [
     CommonModule,
@@ -33,6 +35,7 @@ import { SimpleContextMenuComponent } from './simple-context-menu/simple-context
     GridBodyComponent,
     CellEventsDirective,
     SimpleContextMenuComponent,
+    ActiveCellComponent,
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'de-CH' },

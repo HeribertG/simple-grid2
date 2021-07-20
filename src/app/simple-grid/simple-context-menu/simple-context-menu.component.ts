@@ -125,8 +125,8 @@ export class SimpleContextMenuComponent implements OnInit, OnDestroy {
     }
     if (diffX < 0) {
       mustMove = true;
-      pos.x = tmp!.offsetLeft - tmp!.clientWidth -6;
-    }
+      pos.x = parentPos!.x - tmp!.clientWidth;
+    } 
 
     pos.rect = new Rectangle(0, 0, tmp!.clientWidth, tmp!.clientHeight);
 

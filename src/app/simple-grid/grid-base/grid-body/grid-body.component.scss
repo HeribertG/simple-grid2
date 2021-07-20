@@ -45,79 +45,6 @@
   position: fixed;
 }
 
-
-
-.menu-item {
-  display: flex;
-  flex-flow: row;
-  color: black;
-  padding-left:10px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-right: 6px;
-  cursor: pointer;
- 
-}
-.menu-item-disabled {
-  display: flex;
-  flex-flow: row;
-  color: gray;
-  padding-left:10px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-right: 6px;
-}
-
-.subMenu-separation {
-  height: 3px;
-  background: white;
-  color:grey;
-  width: 100%;
-}
-
-.subMenu-arrow{
-  width: 10px;
-  padding-left: 5px;
-
-}
-.menu {
-  padding:3px;
-  background: white;
-  font-family: Arial;
-  font-size: 12px;
-  font-style: normal;
-  border-radius: 5px;
-  box-shadow: 2px 2px 4px rgba(0, 0, 0, .5);
-}
-
-.menu-item:hover {
-  background: $focusBorderColor;
-  color: white;
-}
-
-.menu-item-disabled:hover {
-  background: $focusBorderColorDisable !important;
-  color: white;
-}
-
-
-
-.subMenu-separation:hover {
-    background: white;
- }
-
- .separation{
-  width: 100%;
- }
-.subMenu-key {
-  padding-left: 20px;
-  text-align: end;
-  width: auto;
-
-}
-
-
-
 canvas {
   zoom: 100%;
   max-zoom: 100%;
@@ -130,9 +57,3 @@ canvas {
   flex: 1 1 auto;
 }
 
-.edit-cell{
-  z-index: 77777;
-  width: auto;
-  height: auto;
-  position: fixed;
-}

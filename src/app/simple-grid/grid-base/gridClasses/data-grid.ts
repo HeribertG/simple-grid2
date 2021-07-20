@@ -1,10 +1,8 @@
 import { WeekDay } from "@angular/common";
-import { MenuIDEnum } from "../../helpers/enums/cell-settings.enum";
-import { WeekDaysEnum } from "../../helpers/enums/grid-settings.enum";
-import { ContextMenu } from "../../simple-context-menu/menuClasses/context-menu";
+import { EditableModeEnum, WeekDaysEnum } from "../../helpers/enums/grid-settings.enum";
 import { GridCell, HeaderCell, IGridCell, IHeaderCell } from "./grid-cell";
 import { GridSetting } from "./grid-setting";
-import { IMergeCell, MergeCellCollection } from "./merge-cell";
+import { MergeCellCollection } from "./merge-cell";
 
 export class GridData {
 
@@ -146,21 +144,21 @@ export class GridData {
   private fomatSpace(gridCell: GridCell, row: number, col: number): void {
 
     let colSpan = 1;
-        let rowSpan = 1;
+    let rowSpan = 1;
 
-        if (gridCell.currentMergeCell) {
-            colSpan = gridCell.currentMergeCell.colSpan;
-            rowSpan = gridCell.currentMergeCell.rowSpan;
-        }
+    if (gridCell.currentMergeCell) {
+      colSpan = gridCell.currentMergeCell.colSpan;
+      rowSpan = gridCell.currentMergeCell.rowSpan;
+    }
 
     gridCell.mainTextWidth = (this.gridSetting!.cellWidthWithHtmlZoom * colSpan) - (this.gridSetting!.cellPadding * 2);
-    gridCell.mainTextHeight =(this.gridSetting!.mainTextHeightWithHtmlZoom * rowSpan);
+    gridCell.mainTextHeight = (this.gridSetting!.mainTextHeightWithHtmlZoom * rowSpan);
 
     gridCell.firstSubTextWidth = gridCell.mainTextWidth;
-    gridCell.firstSubTextHeight =this.gridSetting!.firstSubTextHeightWithHtmlZoom;
+    gridCell.firstSubTextHeight = this.gridSetting!.firstSubTextHeightWithHtmlZoom;
 
     gridCell.secondSubTextWidth = gridCell.mainTextWidth;
-    gridCell.secondSubTextHeight =this.gridSetting!.secondSubTextHeightWithHtmlZoom;
+    gridCell.secondSubTextHeight = this.gridSetting!.secondSubTextHeightWithHtmlZoom;
   }
 
   private setCellText(gridCell: GridCell, row: number, col: number): void {
@@ -169,8 +167,16 @@ export class GridData {
   }
 
 
-  getCellMainText(row: number, col: number):string{
+  getCellMainText(row: number, col: number): string {
     return 'Zelle ' + row.toString() + ' / ' + col.toString();;
+  }
+
+  changeCellMainText(value: string, row: number, col: number): void {
+
+  }
+  
+  cellMode(row: number, col: number): EditableModeEnum {
+    return EditableModeEnum.Default;
   }
 
 }

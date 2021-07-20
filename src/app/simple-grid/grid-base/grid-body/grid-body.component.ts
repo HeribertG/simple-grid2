@@ -14,6 +14,8 @@ import { ScrollGrid } from '../gridClasses/scroll-grid';
 import { HScrollbarComponent } from '../h-scrollbar/h-scrollbar.component';
 import { VScrollbarComponent } from '../v-scrollbar/v-scrollbar.component';
 import { SimpleContextMenuComponent } from '../../simple-context-menu/simple-context-menu.component';
+import { ActiveCellComponent } from '../active-cell/active-cell.component';
+import { Rectangle } from '../../helpers/geometry';
 
 
 @Component({
@@ -29,6 +31,8 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() scrollGrid: ScrollGrid | undefined | null;
   @Input() gridCellContextMenu: GridCellContextMenu | undefined | null;
   @Input() simpleContextMenu: SimpleContextMenuComponent | undefined | null;
+  @Input() activeCell: ActiveCellComponent | undefined | null;
+
   @Output() contextMenuActionEvent = new EventEmitter<ContextMenu>();
 
   cellManipulation: GridCellManipulation | undefined | null;
@@ -52,8 +56,6 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   private headerCtx: CanvasRenderingContext2D | undefined | null;
   private headerCanvas: HTMLCanvasElement | undefined | null;
   private tooltip: HTMLDivElement | undefined | null;
-  private editCell: HTMLDivElement | undefined | null;
-  
 
 
   constructor(
@@ -96,7 +98,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     this.headerCtx.imageSmoothingQuality = 'high';
 
     this.tooltip = document.getElementById('tooltip') as HTMLDivElement;
-    this.editCell = document.getElementById('edit-cell') as HTMLDivElement;
+
   }
 
   ngAfterViewInit(): void {
@@ -127,8 +129,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     this.renderCanvas = undefined;
     this.headerCanvas = undefined;
     this.tooltip = undefined;
-    this.editCell  = undefined;
-    
+
   }
 
   init(): void {
@@ -211,12 +212,8 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     this.canvas!.width = this.canvas!.clientWidth;
 
 
-    const visibleRow: number = Math.ceil(
-      this.canvas!.clientHeight / this.gridData!.gridSetting!.cellHeight
-    );
-    const visibleCol: number = Math.ceil(
-      this.canvas!.clientWidth / this.gridData!.gridSetting!.cellWidth
-    );
+    const visibleRow = this.visibleRow();
+    const visibleCol = this.visibleCol();
     const height = visibleRow * this.gridData!.gridSetting!.cellHeight;
     const width = visibleCol * this.gridData!.gridSetting!.cellWidth;
 
@@ -280,12 +277,8 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
       this.renderCanvas!.clientWidth / this.gridData!.gridSetting!.cellWidth
     );
 
-    const visibleRow: number = Math.ceil(
-      this.canvas!.clientHeight / this.gridData!.gridSetting!.cellHeight
-    );
-    const visibleCol: number = Math.ceil(
-      this.canvas!.clientWidth / this.gridData!.gridSetting!.cellWidth
-    );
+    const visibleRow = this.visibleRow();
+    const visibleCol = this.visibleCol();
     const height = visibleRow * this.gridData!.gridSetting!.cellHeight;
     const width = visibleCol * this.gridData!.gridSetting!.cellWidth;
 
@@ -302,12 +295,8 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onShrinkGrid(): void {
-    const visibleRow: number = Math.ceil(
-      this.canvas!.clientHeight / this.gridData!.gridSetting!.cellHeight
-    );
-    const visibleCol: number = Math.ceil(
-      this.canvas!.clientWidth / this.gridData!.gridSetting!.cellWidth
-    );
+    const visibleRow = this.visibleRow();
+    const visibleCol = this.visibleCol();
     const height = visibleRow * this.gridData!.gridSetting!.cellHeight;
     const width = visibleCol * this.gridData!.gridSetting!.cellWidth;
 
@@ -357,9 +346,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     const dirX = directionX;
     const dirY = directionY;
 
-    const visibleCol = Math.ceil(
-      this.canvas!.clientWidth / this.gridData!.gridSetting!.cellWidth
-    );
+    const visibleCol = this.visibleCol();
     const visibleRow = Math.ceil(
       this.canvas!.clientHeight / this.gridData!.gridSetting!.cellHeight
     );
@@ -424,12 +411,8 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private moveIt(directionX: number, directionY: number): void {
-    const visibleRow: number = Math.ceil(
-      this.canvas!.clientHeight / this.gridData!.gridSetting!.cellHeight
-    );
-    const visibleCol: number = Math.ceil(
-      this.canvas!.clientWidth / this.gridData!.gridSetting!.cellWidth
-    );
+    const visibleRow = this.visibleRow();
+    const visibleCol = this.visibleCol();
 
     if (directionX !== 0) {
 
@@ -570,12 +553,8 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     this.vScrollbar!.refresh();
     this.vScrollbar!.refresh();
 
-    const visibleRow: number = Math.ceil(
-      this.canvas!.clientHeight / this.gridData!.gridSetting!.cellHeight
-    );
-    const visibleCol: number = Math.ceil(
-      this.canvas!.clientWidth / this.gridData!.gridSetting!.cellWidth
-    );
+    const visibleRow = this.visibleRow();
+    const visibleCol = this.visibleCol();
     const height = visibleRow * this.gridData!.gridSetting!.cellHeight;
     const width = visibleCol * this.gridData!.gridSetting!.cellWidth;
 
@@ -657,7 +636,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  drawSelectedHeaderCell() {
+  drawSelectedHeaderCell(): void {
     if (this.position != null) {
       if (!this.position.isEmpty()) {
         this.ctx!.save();
@@ -740,6 +719,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
       this.AnchorKeyPosition = this.position;
     }
   }
+
   unSetShiftKey(): void {
 
     this.isShift = false;
@@ -867,7 +847,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
-  drawSelection() {
+  drawSelection(): void {
     this.ctx!.save();
 
     this.ctx!.rect(
@@ -914,7 +894,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  destroySelection() {
+  destroySelection(): void {
     this.cellManipulation!.positionCollection.clear();
     this.renderGrid();
   }
@@ -940,7 +920,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   /* #endregion position and selection */
 
   /* #region ToolTips */
-  showToolTip({ value, event }: { value: any; event: MouseEvent }) {
+  showToolTip({ value, event }: { value: any; event: MouseEvent }): void {
     if (this.tooltip!.innerHTML !== value) {
       this.tooltip!.innerHTML = value;
       this.tooltip!.style.top = event.clientY + 'px';
@@ -950,7 +930,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  hideToolTip() {
+  hideToolTip(): void {
     // if ((this.tooltip.style.display = "none") && (this.tooltip.innerHTML != ''))
     //   this.tooltip.innerHTML == '';
 
@@ -963,7 +943,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private fadeInToolTip() {
+  private fadeInToolTip(): void {
     let op = 0.1;
     this.tooltip!.style.display = 'block';
     const that = this;
@@ -982,7 +962,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     }, 20);
   }
 
-  private fadeOutToolTipSlow() {
+  private fadeOutToolTipSlow(): void {
     let op = 1;
 
     const timer = setInterval(function () {
@@ -998,7 +978,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     }, 100);
   }
 
-  private fadeOutToolTip() {
+  private fadeOutToolTip(): void {
     let op = 1;
 
     // const timer = setInterval(function() {
@@ -1015,7 +995,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
     // }, 50);
   }
 
-  destroyToolTip() {
+  destroyToolTip(): void {
     this.tooltip!.style.opacity = '0';
     this.tooltip!.style.display = 'none';
     this.tooltip!.innerHTML = '';
@@ -1025,23 +1005,83 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /* #region edit-cell */
 
+  closeEditableCell(): void {
+
+  }
+
+  writeCell(pos: Position): void {
+
+  }
 
   /* #endregion edit-cell */
 
   /* #region canvas-metrics */
 
-  get clientLeft():number{
+  visibleCol(): number {
+    return Math.ceil(
+      this.canvas!.clientWidth / this.gridData!.gridSetting!.cellWidth
+    );
+  }
+
+  visibleRow(): number {
+    return Math.ceil(
+      this.canvas!.clientHeight / this.gridData!.gridSetting!.cellHeight
+    );
+  }
+
+  firstVisibleColumn(): number {
+    return this.hScrollbar!.value;
+  }
+
+  lastVisibleColumn(): number {
+    return this.firstVisibleColumn() + this.visibleCol();
+  }
+
+  firstVisibleRow(): number {
+    return this.vScrollbar!.value;
+  }
+
+  lastVisibleRow(): number {
+    return this.firstVisibleRow() + this.visibleRow();
+  }
+
+  isActivCellVisible(): boolean {
+    let colVisible = false;
+    let rowVisible = false;
+    if (this.position.column >= this.firstVisibleColumn() && this.position.column <= this.lastVisibleColumn()) {
+      colVisible = true;
+    }
+    if (this.position.row >= this.firstVisibleRow() && this.position.row <= this.lastVisibleRow()) {
+      rowVisible = true;
+    }
+
+    return colVisible && rowVisible;
+
+  }
+
+  activeCellRectangle(): Rectangle {
+
+    const left = this.position.column * this.gridData!.gridSetting!.cellWidth;
+    const top = this.position.row * this.gridData!.gridSetting!.cellHeight;
+    return new Rectangle(left, top, left + this.gridData!.gridSetting!.cellWidth, top + this.gridData!.gridSetting!.cellHeight);
+
+  }
+
+  get clientLeft(): number {
     return 0;
   }
-  get clientTop():number{
+
+  get clientTop(): number {
     return this.gridData!.gridSetting!.cellHeaderHeight;
   }
-  get clientHeight():number{
+
+  get clientHeight(): number {
     return this.canvas!.clientHeight;
   }
 
-  get clientWidth() :number{
+  get clientWidth(): number {
     return this.canvas!.clientWidth;
   }
+  
   /* #endregion canvas-metrics */
 }

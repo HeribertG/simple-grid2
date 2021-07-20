@@ -3,6 +3,7 @@ import {
   HostListener,
   NgZone,
 } from '@angular/core';
+import { EditableModeEnum } from 'src/app/simple-grid/helpers/enums/grid-settings.enum';
 import { Rectangle } from 'src/app/simple-grid/helpers/geometry';
 import { Position } from '../../gridClasses/position';
 import { GridBodyComponent } from '../grid-body.component';
@@ -16,8 +17,8 @@ import { GridBodyComponent } from '../grid-body.component';
 })
 export class CellEventsDirective {
 
-  
-  
+
+
   private keyDown = false;
   private scrollByKey = false;
   private isDrawing = false;
@@ -34,11 +35,11 @@ export class CellEventsDirective {
   @HostListener('mouseleave', ['$event']) onMouseLeave(event: MouseEvent) {
     this.gridBody.destroyToolTip();
 
-    const rect = new Rectangle(this.gridBody.clientLeft,this.gridBody.clientTop,this.gridBody.clientWidth ,this.gridBody.clientHeight);
-    if(!rect.pointInRect(event.clientX,event.clientY)){
+    const rect = new Rectangle(this.gridBody.clientLeft, this.gridBody.clientTop, this.gridBody.clientWidth, this.gridBody.clientHeight);
+    if (!rect.pointInRect(event.clientX, event.clientY)) {
       this.gridBody.simpleContextMenu!.removeMenu();
     }
-    
+
   }
 
   @HostListener('mousewheel', ['$event']) onMouseWheel(
@@ -110,7 +111,7 @@ export class CellEventsDirective {
       //   }
       // }
       this.gridBody.hideToolTip();
-     //  this.gridBody.simpleContextMenu!.removeMenu();
+      //  this.gridBody.simpleContextMenu!.removeMenu();
 
     }
   }
@@ -369,64 +370,57 @@ export class CellEventsDirective {
       return;
     }
 
-    // if (e.Key == Input.Key.Delete) {
-    //   zDelete();
-    //   e.Handled = true;
-    //   p_KeyDown = false;
-    //   return;
-    // }
+    // Delete
+    if (event.key === 'Delete') {
 
-    // if (e.Key == Key.X && IsCtrl) {
-    //   try {
-    //     zCut();
-    //     e.Handled = true;
-    //     return;
-    //   }
-    //   catch (Exception ex)
-    //   {
-    //     Debug.Print("ucChildSimpleGrid.KeyDown: " + ex.Message);
-    //   }
-    // }
+      this.keyDown = false;
+      this.stopEvent(event);
+      return;
+    }
+
+    // Cut
+    if (event.key.toLocaleLowerCase() === 'x' && event.ctrlKey) {
+
+      this.keyDown = false;
+      this.stopEvent(event);
+      return;
+     
+    }
+
     // Copy
     if (event.key === 'c' && event.ctrlKey) {
       this.gridBody.cellManipulation!.copy();
       this.keyDown = false;
-
+      this.stopEvent(event);
       return;
     }
-    // // Paste
-    // if (e.Key == Key.V && IsCtrl) {
-    //   try {
-    //     zPaste();
-    //     e.Handled = true;
-    //     return;
-    //   }
-    //   catch (Exception ex)
-    //   {
-    //     Debug.Print("ucChildSimpleGrid.KeyDown: " + ex.Message);
-    //   }
-    // }
 
-    // if (!(e.Key == Key.C && IsCtrl)) {
-    //   if (!(e.Key == Key.V && IsCtrl)) {
-    //     if (!(e.Key == Key.X && IsCtrl)) {
-    //       if (!IsCtrl) {
-    //         if (IsEditable) {
-    //           if (EditMode == enEditableMode.Default | EditMode == enEditableMode.AnyKey) {
-    //             if (p_PositionCollection.Count == 0 || ((p_PositionCollection.First.Row == p_PositionCollection.Last.Row) && (p_PositionCollection.First.Column == p_PositionCollection.Last.Column))) {
-    //               if (!(e.OriginalSource) is System.Windows.Controls.TextBox)
-    //               {
-    //                 if (p_LastSelectedPositionState == enPositionState.None)
-    //                   zEditSelectedCell();
-    //               }
-    //             }
-    //           }
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
-    event.stopPropagation();
+    // Paste
+    if (event.key.toLocaleLowerCase() === 'v' && event.ctrlKey) {
+      this.keyDown = false;
+      this.stopEvent(event);
+      return;
+    }
+
+
+    if (!event.ctrlKey) {
+      if (this.gridBody.gridData!.gridSetting!.isEditabled) {
+        const pos = this.gridBody.position;
+        if (pos) {
+          const mode = this.gridBody.gridData!.cellMode(pos.row, pos.column);
+          if (mode == EditableModeEnum.Default || mode == EditableModeEnum.AnyKey) {
+
+            if (this.gridBody.gridData!.cellMode(pos.row, pos.column) != EditableModeEnum.None) {
+              if (this.gridBody.isActivCellVisible()) {
+                // zEditSelectedCell();
+              }
+
+            }
+          }
+        }
+      }
+    }
+
   }
 
   @HostListener('window:keyup', ['$event']) onKeyUp(

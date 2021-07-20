@@ -1,24 +1,24 @@
-
 <div class="grid-container">
-    <!-- <div class="header">
-        <div class ="header-box ">
-            Kopfzeile
-        </div>
-        
-    </div> -->
-    <div class="grid-box">
-        <div class="grid-body" >
-            <app-grid-body #gridBody [gridCellContextMenu]="gridCellContextMenu" [simpleContextMenu]="gridContextMenu" [gridData]="gridData" [scrollGrid]="scrollGrid"  [vScrollbar]="vScrollbar" [hScrollbar]="hScrollbar"></app-grid-body>
-        </div>
-        <div  class="v-scrollbar">
-            <app-v-scrollbar  #vScrollbar [scrollGrid]="scrollGrid"  [gridBody]="gridBody" ></app-v-scrollbar>
-        </div>
+  <div class="grid-box">
 
-    </div>
-    <div class="h-scrollbar">
-        <app-h-scrollbar  #hScrollbar [scrollGrid]="scrollGrid" [gridBody]="gridBody"></app-h-scrollbar>
+    <div class="grid-body">
+      <app-grid-body #gridBody [gridCellContextMenu]="gridCellContextMenu" [simpleContextMenu]="gridContextMenu"
+        [gridData]="gridData" [scrollGrid]="scrollGrid" [vScrollbar]="vScrollbar" [hScrollbar]="hScrollbar">
+      </app-grid-body>
     </div>
 
-    <app-simple-context-menu #gridContextMenu [gridBody]="gridBody"  [gridCellContextMenu]="gridCellContextMenu" >
-    </app-simple-context-menu>
+    <div class="v-scrollbar">
+      <app-v-scrollbar #vScrollbar [scrollGrid]="scrollGrid" [gridBody]="gridBody"></app-v-scrollbar>
+    </div>
+
+  </div>
+  
+  <div class="h-scrollbar">
+    <app-h-scrollbar #hScrollbar [scrollGrid]="scrollGrid" [gridBody]="gridBody"></app-h-scrollbar>
+  </div>
+
+  <app-simple-context-menu #gridContextMenu [gridBody]="gridBody" [gridCellContextMenu]="gridCellContextMenu">
+  </app-simple-context-menu>
+
+  <app-active-cell #activeCell [gridData]="gridData"></app-active-cell>
 </div>
