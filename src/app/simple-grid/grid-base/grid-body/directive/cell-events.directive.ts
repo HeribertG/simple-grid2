@@ -9,15 +9,11 @@ import { Position } from '../../gridClasses/position';
 import { GridBodyComponent } from '../grid-body.component';
 
 
-
-
 @Directive({
   // tslint:disable-next-line: directive-selector
   selector: '[klacksCellEvents]'
 })
 export class CellEventsDirective {
-
-
 
   private keyDown = false;
   private scrollByKey = false;
@@ -30,9 +26,9 @@ export class CellEventsDirective {
     private gridBody: GridBodyComponent,
   ) { }
 
-  @HostListener('mouseenter', ['$event']) onMouseEnter(event: MouseEvent) { }
+  @HostListener('mouseenter', ['$event']) onMouseEnter(event: MouseEvent) : void { }
 
-  @HostListener('mouseleave', ['$event']) onMouseLeave(event: MouseEvent) {
+  @HostListener('mouseleave', ['$event']) onMouseLeave(event: MouseEvent): void  {
     this.gridBody.destroyToolTip();
 
     const rect = new Rectangle(this.gridBody.clientLeft, this.gridBody.clientTop, this.gridBody.clientWidth, this.gridBody.clientHeight);
@@ -42,9 +38,7 @@ export class CellEventsDirective {
 
   }
 
-  @HostListener('mousewheel', ['$event']) onMouseWheel(
-    event: WheelEvent
-  ): void {
+  @HostListener('mousewheel', ['$event']) onMouseWheel(event: WheelEvent): void {
     this.gridBody.simpleContextMenu!.clearMenus();
     const moveY: number = event.deltaY === 0 ? 0 : event.deltaY > 0 ? 1 : -1;
     const moveX: number = event.deltaX === 0 ? 0 : event.deltaX > 0 ? 1 : -1;
@@ -116,12 +110,10 @@ export class CellEventsDirective {
     }
   }
 
-  @HostListener('window:keydown', ['$event']) onKeyDown(
-    event: KeyboardEvent
-  ): void {
+  @HostListener('window:keydown', ['$event']) onKeyDown(event: KeyboardEvent): void {
     this.keyDown = true;
     this.gridBody.simpleContextMenu!.removeMenu();
-
+    
 
     if (event.shiftKey) {
       this.gridBody.setShiftKey();
@@ -157,6 +149,7 @@ export class CellEventsDirective {
           if (this.gridBody.AnchorKeyPosition) { this.gridBody.drawSelectionDynamically(this.gridBody.AnchorKeyPosition as Position); }
         }
 
+        this.gridBody.closeEditableCell();
         this.stopEvent(event)
         return;
       }
@@ -190,6 +183,7 @@ export class CellEventsDirective {
         this.gridBody.position.column
       );
 
+      this.gridBody.closeEditableCell();
       this.gridBody.drawGrid();
       this.stopEvent(event)
       return;
@@ -225,6 +219,7 @@ export class CellEventsDirective {
           if (this.gridBody.AnchorKeyPosition) { this.gridBody.drawSelectionDynamically(this.gridBody.AnchorKeyPosition as Position); }
         }
 
+        this.gridBody.closeEditableCell();
         this.stopEvent(event)
         return;
       }
@@ -257,6 +252,7 @@ export class CellEventsDirective {
         this.gridBody.position.column
       );
 
+      this.gridBody.closeEditableCell();
       this.gridBody.drawGrid();
       this.stopEvent(event)
       return;
@@ -283,6 +279,7 @@ export class CellEventsDirective {
         this.gridBody.position.column
       );
 
+      this.gridBody.closeEditableCell();
       this.gridBody.drawGrid();
       this.stopEvent(event);
       return;
@@ -304,6 +301,7 @@ export class CellEventsDirective {
         this.gridBody.position.column
       );
 
+      this.gridBody.closeEditableCell();
       this.gridBody.drawGrid();
       this.stopEvent(event);
       return;
@@ -333,6 +331,7 @@ export class CellEventsDirective {
         if (this.gridBody.AnchorKeyPosition) { this.gridBody.drawSelectionDynamically(this.gridBody.AnchorKeyPosition as Position); }
       }
 
+      this.gridBody.closeEditableCell();
       this.stopEvent(event);
       return;
     }
@@ -412,7 +411,7 @@ export class CellEventsDirective {
 
             if (this.gridBody.gridData!.cellMode(pos.row, pos.column) != EditableModeEnum.None) {
               if (this.gridBody.isActivCellVisible()) {
-                // zEditSelectedCell();
+                this.gridBody.createEditableCell();
               }
 
             }
@@ -423,9 +422,7 @@ export class CellEventsDirective {
 
   }
 
-  @HostListener('window:keyup', ['$event']) onKeyUp(
-    event: KeyboardEvent
-  ): void {
+  @HostListener('window:keyup', ['$event']) onKeyUp( event: KeyboardEvent): void {
     this.keyDown = false;
     this.scrollByKey = false;
     if (!event.shiftKey) {
@@ -434,9 +431,9 @@ export class CellEventsDirective {
     this.gridBody.isCtrl = false;
   }
 
-  @HostListener('window:keypress', ['$event']) onKeyPress(
-    event: KeyboardEvent
-  ): void { }
+  @HostListener('window:keypress', ['$event']) onKeyPress( event: KeyboardEvent): void { 
+    
+  }
 
   @HostListener('window:focus', ['$event']) onfocus(event: FocusEvent): void {
     this.gridBody.isFocused = true;
@@ -455,7 +452,7 @@ export class CellEventsDirective {
   }
 
   @HostListener('window:contextmenu', ['$event']) onContextMenu(event: any): void {
-    this.stopEvent(event);
+     this.stopEvent(event);
   }
 
   scrollOnPoint(pos: Position) {
@@ -488,16 +485,20 @@ export class CellEventsDirective {
 
   private respondToLeftMouseDown(event: MouseEvent): void {
     this.gridBody.destroySelection();
-
+   
+    
     const pos: Position = this.gridBody.calcCorrectCoordinate(event);
+
     this.isDrawing = true;
 
     if (this.gridBody.position !== pos) {
+      this.gridBody.closeEditableCell();
       this.gridBody.position = pos;
     }
   }
 
   private respondToRightMouseDown(event: MouseEvent): void {
+    this.gridBody.closeEditableCell();
     this.gridBody.simpleContextMenu!.showContextMenu(event);
   }
 

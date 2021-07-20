@@ -23,6 +23,7 @@ import { Rectangle } from '../../helpers/geometry';
   templateUrl: './grid-body.component.html',
   styleUrls: ['./grid-body.component.scss']
 })
+
 export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Input() gridData: GridData | undefined | null;
@@ -343,9 +344,12 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   moveGrid(directionX: number, directionY: number): void {
+    
+    this.closeEditableCell();
+
     const dirX = directionX;
     const dirY = directionY;
-
+    
     const visibleCol = this.visibleCol();
     const visibleRow = Math.ceil(
       this.canvas!.clientHeight / this.gridData!.gridSetting!.cellHeight
@@ -598,17 +602,17 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
         this.ctx!.strokeStyle = 'grey';
       }
 
-      const col: number =
+      const deltaX: number =
         (this.position.column - this.scrollGrid!.hScrollValue) *
         this.gridData!.gridSetting!.cellWidth;
-      const row: number =
+      const deltaY: number =
         (this.position.row - this.scrollGrid!.vScrollValue) *
         this.gridData!.gridSetting!.cellHeight +
         this.gridData!.gridSetting!.cellHeaderHeight;
 
       this.ctx!.strokeRect(
-        col - 1,
-        row - 1,
+        deltaX - 1,
+        deltaY - 1,
         this.gridData!.gridSetting!.cellWidth + 3,
         this.gridData!.gridSetting!.cellHeight + 1
       );
@@ -923,9 +927,12 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   showToolTip({ value, event }: { value: any; event: MouseEvent }): void {
     if (this.tooltip!.innerHTML !== value) {
       this.tooltip!.innerHTML = value;
-      this.tooltip!.style.top = event.clientY + 'px';
-      this.tooltip!.style.left = event.clientX + 'px';
-      this.tooltip!.style.display = 'block';
+
+      this.renderer.setStyle(this.tooltip!, 'top', event.clientY + 'px');
+      this.renderer.setStyle(this.tooltip!, 'left', event.clientX + 'px');
+      this.renderer.setStyle(this.tooltip!, 'display', 'block');
+
+
       this.fadeInToolTip();
     }
   }
@@ -996,21 +1003,23 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   destroyToolTip(): void {
-    this.tooltip!.style.opacity = '0';
-    this.tooltip!.style.display = 'none';
+
+    this.renderer.setStyle(this.tooltip!, 'opacity', '0');
+    this.renderer.setStyle(this.tooltip!, 'display', 'none');
     this.tooltip!.innerHTML = '';
-    this.tooltip!.style.display = 'none';
+
   }
   /* #endregion ToolTips */
 
   /* #region edit-cell */
 
   closeEditableCell(): void {
-
+    this.activeCell!.hideCell();
   }
 
-  writeCell(pos: Position): void {
+  createEditableCell(): void {
 
+    this.activeCell!.showCell(this.activeCellRectangle());
   }
 
   /* #endregion edit-cell */
@@ -1061,9 +1070,15 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
   activeCellRectangle(): Rectangle {
 
-    const left = this.position.column * this.gridData!.gridSetting!.cellWidth;
-    const top = this.position.row * this.gridData!.gridSetting!.cellHeight;
-    return new Rectangle(left, top, left + this.gridData!.gridSetting!.cellWidth, top + this.gridData!.gridSetting!.cellHeight);
+    const deltaX: number =
+      ((this.position.column - this.scrollGrid!.hScrollValue) *
+      this.gridData!.gridSetting!.cellWidth) ; 
+    const deltaY: number =
+      ((this.position.row - this.scrollGrid!.vScrollValue) *
+      this.gridData!.gridSetting!.cellHeight +
+      this.gridData!.gridSetting!.cellHeaderHeight);
+
+    return new Rectangle(deltaX, deltaY, deltaX + this.gridData!.gridSetting!.cellWidth-3, deltaY + this.gridData!.gridSetting!.cellHeight-3);
 
   }
 
@@ -1082,6 +1097,6 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   get clientWidth(): number {
     return this.canvas!.clientWidth;
   }
-  
+
   /* #endregion canvas-metrics */
 }

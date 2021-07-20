@@ -1,3 +1,13 @@
-<div class="edit-cell">
-    <textarea class="edit-text" name="edit-text" id="edit-text"  ></textarea>
-</div>
+
+    <input  type="text" class="edit-cell" name="edit-cell" id="edit-cell"
+    (mouseenter)="onMouseEnter($event)"
+    (mouseleave)="onMouseLeave($event)"
+    (mousedown)="onMouseDown($event)"
+    (click)="onMouseClick($event)"
+    (mouseup)="onMouseUp($event)"
+    (mousemove)="onMouseMove($event)"
+    (keydown)="onKeyDown($event)"
+    (keyup)="onKeyUp($event)"
+    (keypress)="onKeyPress($event)"
+    >
+

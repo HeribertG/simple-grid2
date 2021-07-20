@@ -3,7 +3,7 @@ import { ClipboardModeEnum } from "../../helpers/enums/grid-settings.enum";
 
 export class GridSetting {
 
-  isEditabled =false;
+  isEditabled =true;
 
   // tslint:disable-next-line:variable-name
   private _zoom = 1;
