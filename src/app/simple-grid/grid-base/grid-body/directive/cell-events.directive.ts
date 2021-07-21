@@ -1,3 +1,4 @@
+import { identifierModuleUrl } from '@angular/compiler';
 import {
   Directive,
   HostListener,
@@ -58,6 +59,28 @@ export class CellEventsDirective {
 
   @HostListener('click', ['$event']) onMouseClick(event: MouseEvent): void {
     this.gridBody.simpleContextMenu!.removeMenu();
+  }
+  @HostListener('dblclick', ['$event']) onMouseDoubleClick(event: MouseEvent): void {
+    this.gridBody.simpleContextMenu!.removeMenu();
+
+    if (!event.ctrlKey) {
+      if (this.gridBody.gridData!.gridSetting!.isEditabled) {
+        const pos = this.gridBody.position;
+        if (pos) {
+          const mode = this.gridBody.gridData!.cellMode(pos.row, pos.column);
+          if (mode == EditableModeEnum.Default || mode == EditableModeEnum.DoubleClick) {
+
+            if (this.gridBody.gridData!.cellMode(pos.row, pos.column) != EditableModeEnum.None) {
+              if (this.gridBody.isActivCellVisible()) {
+                this.gridBody.createEditableCell();
+              }
+
+            }
+          }
+        }
+      }
+    }
+
   }
 
   @HostListener('mouseup', ['$event']) onMouseUp(event: MouseEvent): void {
@@ -221,8 +244,9 @@ export class CellEventsDirective {
 
         this.gridBody.closeEditableCell();
         this.stopEvent(event)
-        return;
+        
       }
+      return;
     }
 
     if (event.key === 'PageUp') {
@@ -401,6 +425,22 @@ export class CellEventsDirective {
       return;
     }
 
+    if (event.key === 'Enter' ) {
+      this.keyDown = false;
+      this.stopEvent(event);
+      this.gridBody.closeEditableCell();
+      if(this.gridBody.position.column < this.gridBody.gridData!.columns!){
+        const pos = new Position(this.gridBody.position.row, this.gridBody.position.column +1);
+        this.gridBody.position = pos;
+        if (
+          this.gridBody.position.column >
+          this.gridBody.scrollGrid!.hScrollValue + this.gridBody.scrollGrid!.visibleCols
+        ) {
+          this.gridBody.moveGrid(1, 0);
+        }
+      }
+      return;
+    }
 
     if (!event.ctrlKey) {
       if (this.gridBody.gridData!.gridSetting!.isEditabled) {

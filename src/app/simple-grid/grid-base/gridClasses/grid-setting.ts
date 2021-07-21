@@ -53,10 +53,7 @@ export class GridSetting {
 
 
   backGroundColor = '#FFFFFF';
-
-
   borderColor = '#999999';
-
   mainFontColor = '#000000';
   subFontColor = '#404040';
 

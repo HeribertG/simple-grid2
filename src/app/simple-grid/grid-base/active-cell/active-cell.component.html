@@ -1,5 +1,5 @@
 
-    <input  type="text" class="edit-cell" name="edit-cell" id="edit-cell"
+    <input  type="text" class="edit-cell" [ngModel]="cellValue" name="edit-cell" id="edit-cell"
     (mouseenter)="onMouseEnter($event)"
     (mouseleave)="onMouseLeave($event)"
     (mousedown)="onMouseDown($event)"

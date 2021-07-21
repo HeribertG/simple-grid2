@@ -57,6 +57,8 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
   private headerCtx: CanvasRenderingContext2D | undefined | null;
   private headerCanvas: HTMLCanvasElement | undefined | null;
   private tooltip: HTMLDivElement | undefined | null;
+  
+
 
 
   constructor(
@@ -1019,7 +1021,7 @@ export class GridBodyComponent implements OnInit, AfterViewInit, OnDestroy {
 
   createEditableCell(): void {
 
-    this.activeCell!.showCell(this.activeCellRectangle());
+    this.activeCell!.showCell(this.activeCellRectangle(),this.position);
   }
 
   /* #endregion edit-cell */

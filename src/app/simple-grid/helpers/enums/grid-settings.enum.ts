@@ -2,39 +2,13 @@ export enum WeekDaysEnum {Workday,Saturday,Sunday,Holyday, OfficiallyHolyday}
 
 export enum EditableModeEnum {
 
-  ///  <summary>
-  /// No edit support
-  /// </summary>
+ 
   None = 0,
-
-  ///  <summary>
-  /// Edit the cell with F2 key
-  /// </summary>
   F2Key = 1,
-
-  ///  <summary>
-  /// Edit the cell with a double click
-  /// </summary>
   DoubleClick = 2,
-
-  ///  <summary>
-  /// Edit a cell with a single Key
-  /// </summary>
   SingleClick = 4,
-
-  ///  <summary>
-  /// Edit the cell pressing any keys
-  /// </summary>
-  AnyKey = 9,
-
-  ///  <summary>
-  /// Edit the cell when it receive the focus
-  /// </summary>
+  AnyKey = 8,
   Focus = 16,
-
-  ///  <summary>
-  /// DoubleClick + F2Key
-  /// </summary>
   Default = DoubleClick | F2Key | AnyKey
 }
 
